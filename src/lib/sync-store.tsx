@@ -11,7 +11,6 @@ export type Role = "parent" | "sibling";
 export type Difficulty = "easy" | "medium" | "hard";
 export type Category = "indoor" | "outdoor" | "rural";
 export type AssignmentStatus = "todo" | "pending" | "approved";
-export type CheckIn = "can-do" | "need-help";
 
 export type Family = {
   name: string;
@@ -36,7 +35,6 @@ export type Chore = {
   minAge: number;
   category: Category;
   emoji: string;
-  dueTime?: string | undefined;
   hardLastWeekFor?: string[] | undefined;
 };
 
@@ -47,8 +45,6 @@ export type Assignment = {
   status: AssignmentStatus;
   photoUrl?: string | undefined;
   day: string;
-  checkIn?: CheckIn | undefined;
-  helperId?: string | undefined;
 };
 
 export type Reward = {
@@ -60,19 +56,19 @@ export type Reward = {
 };
 
 export const RURAL_CHORES: Chore[] = [
-  { id: "c-water", title: "Fetch water", points: 30, minAge: 13, category: "rural", emoji: "🪣", dueTime: "07:00" },
-  { id: "c-chickens", title: "Feed chickens", points: 10, minAge: 5, category: "rural", emoji: "🐔", dueTime: "07:30" },
-  { id: "c-firewood", title: "Collect firewood", points: 30, minAge: 13, category: "rural", emoji: "🪵", dueTime: "16:00" },
-  { id: "c-yard", title: "Sweep yard", points: 20, minAge: 9, category: "rural", emoji: "🧹", dueTime: "15:00" },
-  { id: "c-goats", title: "Herd goats", points: 30, minAge: 13, category: "rural", emoji: "🐐", dueTime: "06:30" },
+  { id: "c-water", title: "Fetch water", points: 30, minAge: 13, category: "rural", emoji: "🪣" },
+  { id: "c-chickens", title: "Feed chickens", points: 10, minAge: 5, category: "rural", emoji: "🐔" },
+  { id: "c-firewood", title: "Collect firewood", points: 30, minAge: 13, category: "rural", emoji: "🪵" },
+  { id: "c-yard", title: "Sweep yard", points: 20, minAge: 9, category: "rural", emoji: "🧹" },
+  { id: "c-goats", title: "Herd goats", points: 30, minAge: 13, category: "rural", emoji: "🐐" },
 ];
 
 export const URBAN_CHORES: Chore[] = [
-  { id: "c-dishes", title: "Wash dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️", dueTime: "18:30" },
-  { id: "c-toys", title: "Pack away toys", points: 10, minAge: 5, category: "indoor", emoji: "🧸", dueTime: "17:00" },
-  { id: "c-bins", title: "Take out bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️", dueTime: "19:00" },
-  { id: "c-laundry", title: "Fold laundry", points: 30, minAge: 13, category: "indoor", emoji: "👕", dueTime: "16:30" },
-  { id: "c-vacuum", title: "Vacuum lounge", points: 30, minAge: 13, category: "indoor", emoji: "🧽", dueTime: "15:30" },
+  { id: "c-dishes", title: "Wash dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️" },
+  { id: "c-toys", title: "Pack away toys", points: 10, minAge: 5, category: "indoor", emoji: "🧸" },
+  { id: "c-bins", title: "Take out bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️" },
+  { id: "c-laundry", title: "Fold laundry", points: 30, minAge: 13, category: "indoor", emoji: "👕" },
+  { id: "c-vacuum", title: "Vacuum lounge", points: 30, minAge: 13, category: "indoor", emoji: "🧽" },
 ];
 
 export function difficultyOf(chore: Chore): Difficulty {
@@ -175,58 +171,7 @@ type Store = {
   addChore: (c: Omit<Chore, "id">, userId: string) => void;
   rotate: () => void;
   redeem: (rewardId: string, userId: string) => void;
-  setCheckIn: (assignmentId: string, checkIn: CheckIn) => void;
-  acceptHelp: (assignmentId: string, helperId: string) => void;
-  gardenItems: GardenItem[];
-  grown: number;
 };
-
-export type GardenItem = { emoji: string; label: string };
-
-export const RURAL_GARDEN: GardenItem[] = [
-  { emoji: "🌱", label: "Seedling" },
-  { emoji: "🐔", label: "Chicken" },
-  { emoji: "🌽", label: "Maize patch" },
-  { emoji: "🐐", label: "Goat" },
-  { emoji: "🌳", label: "Marula tree" },
-  { emoji: "🚜", label: "Small field" },
-  { emoji: "🌻", label: "Sunflowers" },
-  { emoji: "🏡", label: "Family homestead" },
-];
-
-export const URBAN_GARDEN: GardenItem[] = [
-  { emoji: "🪴", label: "Balcony plant" },
-  { emoji: "🐱", label: "Family cat" },
-  { emoji: "🛋️", label: "Tidy lounge" },
-  { emoji: "🐶", label: "Puppy" },
-  { emoji: "🌷", label: "Window box" },
-  { emoji: "🛏️", label: "Neat bedrooms" },
-  { emoji: "🌳", label: "Street tree" },
-  { emoji: "🏙️", label: "Rooftop garden" },
-];
-
-/** Fair helper suggestion: age-safe, done with own work, lightest load. */
-export function suggestHelper(
-  assignment: Assignment,
-  chore: Chore,
-  siblings: User[],
-  assignments: Assignment[],
-): User | null {
-  const candidates = siblings.filter((s) => {
-    if (s.id === assignment.userId) return false;
-    if (s.age < chore.minAge) return false;
-    const own = assignments.filter((a) => a.userId === s.id);
-    return own.every((a) => a.status === "approved");
-  });
-  if (!candidates.length) return null;
-  return [...candidates].sort(
-    (a, b) =>
-      assignments.filter((x) => x.userId === a.id).length -
-        assignments.filter((x) => x.userId === b.id).length || b.age - a.age,
-  )[0] ?? null;
-}
-
-export const HELP_BONUS = 5;
 
 const StoreContext = createContext<Store | null>(null);
 
@@ -331,22 +276,6 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             users.filter((u) => u.role === "sibling"),
           ),
         ),
-      setCheckIn: (id, checkIn) =>
-        setAssignments((prev) =>
-          prev.map((a) => (a.id === id ? { ...a, checkIn } : a)),
-        ),
-      acceptHelp: (id, helperId) => {
-        setAssignments((prev) =>
-          prev.map((a) => (a.id === id ? { ...a, helperId } : a)),
-        );
-        setUsers((prev) =>
-          prev.map((u) =>
-            u.id === helperId ? { ...u, points: u.points + HELP_BONUS } : u,
-          ),
-        );
-      },
-      gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
-      grown: assignments.filter((a) => a.status === "approved").length,
       redeem: (rewardId, userId) => {
         const reward = rewards.find((r) => r.id === rewardId);
         const user = users.find((u) => u.id === userId);

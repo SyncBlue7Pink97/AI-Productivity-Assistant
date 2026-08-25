@@ -35,7 +35,7 @@ export type Chore = {
   minAge: number;
   category: Category;
   emoji: string;
-  hardLastWeekFor?: string[];
+  hardLastWeekFor?: string[] | undefined;
 };
 
 export type Assignment = {
@@ -43,7 +43,7 @@ export type Assignment = {
   choreId: string;
   userId: string;
   status: AssignmentStatus;
-  photoUrl?: string;
+  photoUrl?: string | undefined;
   day: string;
 };
 
@@ -52,7 +52,7 @@ export type Reward = {
   title: string;
   cost: number;
   emoji: string;
-  redeemed?: boolean;
+  redeemed?: boolean | undefined;
 };
 
 export const RURAL_CHORES: Chore[] = [
@@ -216,7 +216,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             age: k.age,
             points: 0,
             streak: 0,
-            emoji: emojis[i % emojis.length],
+            emoji: emojis[i % emojis.length] ?? "🧒🏾",
           }));
           setUsers([parent, ...kidUsers]);
           setAssignments(

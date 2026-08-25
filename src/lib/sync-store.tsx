@@ -175,7 +175,58 @@ type Store = {
   addChore: (c: Omit<Chore, "id">, userId: string) => void;
   rotate: () => void;
   redeem: (rewardId: string, userId: string) => void;
+  setCheckIn: (assignmentId: string, checkIn: CheckIn) => void;
+  acceptHelp: (assignmentId: string, helperId: string) => void;
+  gardenItems: GardenItem[];
+  grown: number;
 };
+
+export type GardenItem = { emoji: string; label: string };
+
+export const RURAL_GARDEN: GardenItem[] = [
+  { emoji: "🌱", label: "Seedling" },
+  { emoji: "🐔", label: "Chicken" },
+  { emoji: "🌽", label: "Maize patch" },
+  { emoji: "🐐", label: "Goat" },
+  { emoji: "🌳", label: "Marula tree" },
+  { emoji: "🚜", label: "Small field" },
+  { emoji: "🌻", label: "Sunflowers" },
+  { emoji: "🏡", label: "Family homestead" },
+];
+
+export const URBAN_GARDEN: GardenItem[] = [
+  { emoji: "🪴", label: "Balcony plant" },
+  { emoji: "🐱", label: "Family cat" },
+  { emoji: "🛋️", label: "Tidy lounge" },
+  { emoji: "🐶", label: "Puppy" },
+  { emoji: "🌷", label: "Window box" },
+  { emoji: "🛏️", label: "Neat bedrooms" },
+  { emoji: "🌳", label: "Street tree" },
+  { emoji: "🏙️", label: "Rooftop garden" },
+];
+
+/** Fair helper suggestion: age-safe, done with own work, lightest load. */
+export function suggestHelper(
+  assignment: Assignment,
+  chore: Chore,
+  siblings: User[],
+  assignments: Assignment[],
+): User | null {
+  const candidates = siblings.filter((s) => {
+    if (s.id === assignment.userId) return false;
+    if (s.age < chore.minAge) return false;
+    const own = assignments.filter((a) => a.userId === s.id);
+    return own.every((a) => a.status === "approved");
+  });
+  if (!candidates.length) return null;
+  return [...candidates].sort(
+    (a, b) =>
+      assignments.filter((x) => x.userId === a.id).length -
+        assignments.filter((x) => x.userId === b.id).length || b.age - a.age,
+  )[0] ?? null;
+}
+
+export const HELP_BONUS = 5;
 
 const StoreContext = createContext<Store | null>(null);
 
@@ -280,6 +331,22 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             users.filter((u) => u.role === "sibling"),
           ),
         ),
+      setCheckIn: (id, checkIn) =>
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, checkIn } : a)),
+        ),
+      acceptHelp: (id, helperId) => {
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, helperId } : a)),
+        );
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === helperId ? { ...u, points: u.points + HELP_BONUS } : u,
+          ),
+        );
+      },
+      gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
+      grown: assignments.filter((a) => a.status === "approved").length,
       redeem: (rewardId, userId) => {
         const reward = rewards.find((r) => r.id === rewardId);
         const user = users.find((u) => u.id === userId);

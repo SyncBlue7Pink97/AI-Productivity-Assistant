@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
+import { FairnessBreakdown } from "@/components/FairnessBreakdown";
 import { useSync, difficultyOf, weightedPoints, type Category } from "@/lib/sync-store";
 
 export const Route = createFileRoute("/parent")({
@@ -77,6 +78,8 @@ function ParentHome() {
           🔄 Auto-rotate next week (no repeat hard chores)
         </button>
       </section>
+
+      <FairnessBreakdown />
 
       <section className="space-y-3">
         <h2 className="px-1 text-lg font-extrabold">

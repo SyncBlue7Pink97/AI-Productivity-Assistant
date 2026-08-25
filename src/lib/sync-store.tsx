@@ -141,7 +141,7 @@ const seedAssignments: Assignment[] = [
   { id: "a1", choreId: "c-water", userId: "u-amahle", status: "todo", day: "today" },
   { id: "a2", choreId: "c-yard", userId: "u-thabo", status: "todo", day: "today" },
   { id: "a3", choreId: "c-chickens", userId: "u-lindiwe", status: "pending", day: "today" },
-  { id: "a4", choreId: "c-firewood", userId: "u-thabo", status: "todo", day: "today" },
+  { id: "a4", choreId: "c-goats", userId: "u-amahle", status: "todo", day: "today" },
 ];
 
 const seedRewards: Reward[] = [

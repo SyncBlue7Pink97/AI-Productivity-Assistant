@@ -78,6 +78,8 @@ function ParentHome() {
         </button>
       </section>
 
+      <FairnessBreakdown />
+
       <section className="space-y-3">
         <h2 className="px-1 text-lg font-extrabold">
           Pending approvals {pending.length > 0 && `(${pending.length})`}

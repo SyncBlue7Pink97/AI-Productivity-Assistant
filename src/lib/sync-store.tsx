@@ -87,19 +87,19 @@ export type Reward = {
 };
 
 export const RURAL_CHORES: Chore[] = [
-  { id: "c-water", title: "Fetch water", points: 30, minAge: 13, category: "rural", emoji: "🪣" },
-  { id: "c-chickens", title: "Feed chickens", points: 10, minAge: 5, category: "rural", emoji: "🐔" },
-  { id: "c-firewood", title: "Collect firewood", points: 30, minAge: 13, category: "rural", emoji: "🪵" },
-  { id: "c-yard", title: "Sweep yard", points: 20, minAge: 9, category: "rural", emoji: "🧹" },
-  { id: "c-goats", title: "Herd goats", points: 30, minAge: 13, category: "rural", emoji: "🐐" },
+  { id: "c-water", title: "Fetch water", points: 30, minAge: 13, category: "rural", emoji: "🪣", dueTime: "07:00" },
+  { id: "c-chickens", title: "Feed chickens", points: 10, minAge: 5, category: "rural", emoji: "🐔", dueTime: "07:30" },
+  { id: "c-firewood", title: "Collect firewood", points: 30, minAge: 13, category: "rural", emoji: "🪵", dueTime: "16:00" },
+  { id: "c-yard", title: "Sweep yard", points: 20, minAge: 9, category: "rural", emoji: "🧹", dueTime: "15:00" },
+  { id: "c-goats", title: "Herd goats", points: 30, minAge: 13, category: "rural", emoji: "🐐", dueTime: "06:30" },
 ];
 
 export const URBAN_CHORES: Chore[] = [
-  { id: "c-dishes", title: "Wash dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️" },
-  { id: "c-toys", title: "Pack away toys", points: 10, minAge: 5, category: "indoor", emoji: "🧸" },
-  { id: "c-bins", title: "Take out bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️" },
-  { id: "c-laundry", title: "Fold laundry", points: 30, minAge: 13, category: "indoor", emoji: "👕" },
-  { id: "c-vacuum", title: "Vacuum lounge", points: 30, minAge: 13, category: "indoor", emoji: "🧽" },
+  { id: "c-dishes", title: "Wash dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️", dueTime: "19:00" },
+  { id: "c-toys", title: "Pack away toys", points: 10, minAge: 5, category: "indoor", emoji: "🧸", dueTime: "18:00" },
+  { id: "c-bins", title: "Take out bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️", dueTime: "17:30" },
+  { id: "c-laundry", title: "Fold laundry", points: 30, minAge: 13, category: "indoor", emoji: "👕", dueTime: "16:30" },
+  { id: "c-vacuum", title: "Vacuum lounge", points: 30, minAge: 13, category: "indoor", emoji: "🧽", dueTime: "15:30" },
 ];
 
 export function difficultyOf(chore: Chore): Difficulty {

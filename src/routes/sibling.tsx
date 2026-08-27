@@ -36,6 +36,7 @@ function SiblingHome() {
     currentSiblingId,
     setCurrentSibling,
     submitProof,
+    setCheckIn,
     swap,
     family,
     offlineMode,

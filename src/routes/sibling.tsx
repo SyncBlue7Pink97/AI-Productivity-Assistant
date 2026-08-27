@@ -36,7 +36,6 @@ function SiblingHome() {
     currentSiblingId,
     setCurrentSibling,
     submitProof,
-    setCheckIn,
     swap,
     family,
     offlineMode,
@@ -81,143 +80,99 @@ function SiblingHome() {
         <AgeBadge tone={badge.tone} label={badge.label} />
       </div>
 
-      <section className="card-soft p-5">
-        <h2 className="text-lg font-extrabold">Today's plan</h2>
-        <p className="text-xs font-semibold text-muted-foreground">
-          Tap how you feel about each job — then mark it done.
-        </p>
-
-        <ul className="mt-4 space-y-3">
-          {mine.length === 0 && (
-            <li className="rounded-2xl bg-surface-2 p-4 text-sm font-semibold text-muted-foreground">
-              Nothing on the plan today 🎉
-            </li>
-          )}
-          {mine.map((a) => {
-            const chore = chores.find((c) => c.id === a.choreId);
-            if (!chore) return null;
-            const diff = difficultyOf(chore);
-            const helper = users.find((u) => u.id === a.helperId);
-            return (
-              <li key={a.id} className="rounded-3xl bg-surface-2 p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-primary-container text-2xl">
-                    {chore.emoji}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-base font-extrabold">{chore.title}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <AgeBadge tone={diff} label={`${diff} · ${chore.points} pts`} />
-                      {chore.dueTime && (
-                        <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
-                          ⏰ by {chore.dueTime}
-                        </span>
-                      )}
-                      <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
-                        age-weighted {weightedPoints(chore.points, me.age)} pts
-                      </span>
-                    </div>
-                    {helper && (
-                      <p className="mt-2 text-xs font-bold text-on-secondary-container">
-                        🤝 {helper.emoji} {helper.name} is helping
-                      </p>
-                    )}
+      <ul className="space-y-3">
+        {mine.map((a) => {
+          const chore = chores.find((c) => c.id === a.choreId);
+          if (!chore) return null;
+          const diff = difficultyOf(chore);
+          return (
+            <li key={a.id} className="card-soft p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-primary-container text-2xl">
+                  {chore.emoji}
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-extrabold">{chore.title}</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <AgeBadge
+                      tone={diff}
+                      label={`${diff} · ${chore.points} pts`}
+                    />
+                    <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
+                      {chore.category} · min age {chore.minAge}
+                    </span>
+                    <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
+                      age-weighted {weightedPoints(chore.points, me.age)} pts
+                    </span>
                   </div>
                 </div>
+              </div>
 
-                {a.status === "todo" && (
-                  <>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => setCheckIn(a.id, "can")}
-                        className={`rounded-2xl py-3 text-sm font-extrabold ${
-                          a.checkIn === "can"
-                            ? "bg-success/40 text-success-foreground"
-                            : "bg-surface text-muted-foreground"
-                        }`}
-                      >
-                        👍 I can do it
-                      </button>
-                      <button
-                        onClick={() => setCheckIn(a.id, "help")}
-                        className={`rounded-2xl py-3 text-sm font-extrabold ${
-                          a.checkIn === "help"
-                            ? "bg-warning/40 text-warning-foreground"
-                            : "bg-surface text-muted-foreground"
-                        }`}
-                      >
-                        🙋 Need help
-                      </button>
-                      <button
-                        onClick={() => setSwapFor(swapFor === a.id ? null : a.id)}
-                        className="rounded-2xl bg-secondary-container py-3 text-sm font-extrabold text-on-secondary-container"
-                      >
-                        🔁 Swap
-                      </button>
-                      <button
-                        onClick={() => submitProof(a.id, noPhoto ? undefined : "photo.jpg")}
-                        className="rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
-                      >
-                        {noPhoto ? "✅ Done" : "📸 Done + proof"}
-                      </button>
-                    </div>
-                    {a.checkIn === "help" && !helper && (
-                      <p className="mt-2 text-xs font-bold text-warning-foreground">
-                        Asked for help — a parent will match you with a sibling.
-                      </p>
-                    )}
-                  </>
-                )}
-                {a.status === "pending" && (
-                  <p className="mt-3 rounded-2xl bg-warning/25 px-4 py-3 text-sm font-bold text-warning-foreground">
-                    ⏳ Waiting for parent approval
-                  </p>
-                )}
-                {a.status === "approved" && (
-                  <p className="mt-3 rounded-2xl bg-success/25 px-4 py-3 text-sm font-bold text-success-foreground">
-                    🎉 Approved — points added!
-                  </p>
-                )}
+              {a.status === "todo" && (
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={() => submitProof(a.id, noPhoto ? undefined : "photo.jpg")}
+                    className="flex-1 rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+                  >
+                    {noPhoto ? "✅ Mark done" : "📸 Upload proof"}
+                  </button>
+                  <button
+                    onClick={() => setSwapFor(swapFor === a.id ? null : a.id)}
+                    className="rounded-2xl bg-secondary-container px-4 py-3 text-sm font-extrabold text-on-secondary-container"
+                  >
+                    🔁 Swap
+                  </button>
+                </div>
+              )}
+              {a.status === "pending" && (
+                <p className="mt-3 rounded-2xl bg-warning/25 px-4 py-3 text-sm font-bold text-warning-foreground">
+                  ⏳ Waiting for parent approval
+                </p>
+              )}
+              {a.status === "approved" && (
+                <p className="mt-3 rounded-2xl bg-success/25 px-4 py-3 text-sm font-bold text-success-foreground">
+                  🎉 Approved — points added!
+                </p>
+              )}
 
-                {swapFor === a.id && (
-                  <div className="mt-3 space-y-2 rounded-2xl bg-surface p-3">
-                    <p className="text-xs font-bold text-muted-foreground">
-                      Swap with a sibling old enough for this chore
-                    </p>
-                    {siblings
-                      .filter(
-                        (s) =>
-                          s.id !== me.id &&
-                          filterChoresByAge(chores, s.age).some((c) => c.id === chore.id),
-                      )
-                      .map((s) => (
-                        <button
-                          key={s.id}
-                          onClick={() => {
-                            swap(a.id, s.id);
-                            setSwapFor(null);
-                          }}
-                          className="w-full rounded-xl bg-surface-2 px-4 py-2.5 text-left text-sm font-bold"
-                        >
-                          {s.emoji} {s.name} ({s.age})
-                        </button>
-                      ))}
-                    {siblings.filter(
+              {swapFor === a.id && (
+                <div className="mt-3 space-y-2 rounded-2xl bg-surface-2 p-3">
+                  <p className="text-xs font-bold text-muted-foreground">
+                    Swap with a sibling old enough for this chore
+                  </p>
+                  {siblings
+                    .filter(
                       (s) =>
                         s.id !== me.id &&
                         filterChoresByAge(chores, s.age).some((c) => c.id === chore.id),
-                    ).length === 0 && (
-                      <p className="text-sm font-semibold">
-                        No one else is old enough for this one.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+                    )
+                    .map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => {
+                          swap(a.id, s.id);
+                          setSwapFor(null);
+                        }}
+                        className="w-full rounded-xl bg-surface px-4 py-2.5 text-left text-sm font-bold"
+                      >
+                        {s.emoji} {s.name} ({s.age})
+                      </button>
+                    ))}
+                  {siblings.filter(
+                    (s) =>
+                      s.id !== me.id &&
+                      filterChoresByAge(chores, s.age).some((c) => c.id === chore.id),
+                  ).length === 0 && (
+                    <p className="text-sm font-semibold">
+                      No one else is old enough for this one.
+                    </p>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
 
       <p className="px-1 text-xs font-semibold text-muted-foreground">
         {eligible.length} chores in the family pool match {me.name}'s age group.

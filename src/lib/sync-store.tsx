@@ -297,6 +297,24 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             a.id === id ? { ...a, status: "pending", photoUrl } : a,
           ),
         ),
+      setCheckIn: (id, checkIn) =>
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, checkIn } : a)),
+        ),
+      acceptHelp: (id, helperId) => {
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, helperId } : a)),
+        );
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === helperId ? { ...u, points: u.points + HELP_BONUS } : u,
+          ),
+        );
+      },
+      suggestHelper: (id) => {
+        const a = assignments.find((x) => x.id === id);
+        return a ? suggestHelper(a, chores, users, assignments) : null;
+      },
       approve: (id) => {
         const a = assignments.find((x) => x.id === id);
         if (!a) return;

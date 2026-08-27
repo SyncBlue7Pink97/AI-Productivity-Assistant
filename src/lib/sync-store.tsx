@@ -183,12 +183,43 @@ const seedRewards: Reward[] = [
   { id: "r5", title: "New soccer ball", cost: 500, emoji: "⚽" },
 ];
 
+/** Picks the fairest sibling to help: age-eligible, own chores done, lightest load. */
+export function suggestHelper(
+  assignment: Assignment,
+  chores: Chore[],
+  users: User[],
+  assignments: Assignment[],
+): User | null {
+  const chore = chores.find((c) => c.id === assignment.choreId);
+  if (!chore) return null;
+  const candidates = users.filter(
+    (u) =>
+      u.role === "sibling" &&
+      u.id !== assignment.userId &&
+      u.age >= chore.minAge &&
+      allowedDifficulties(u.age).includes(difficultyOf(chore)),
+  );
+  const scored = candidates.map((u) => {
+    const own = assignments.filter((a) => a.userId === u.id);
+    const openOwn = own.filter((a) => a.status === "todo").length;
+    const load = own.reduce((sum, a) => {
+      const c = chores.find((x) => x.id === a.choreId);
+      return sum + (c ? weightedPoints(c.points, u.age) : 0);
+    }, 0);
+    return { user: u, openOwn, load };
+  });
+  scored.sort((a, b) => a.openOwn - b.openOwn || a.load - b.load);
+  return scored[0]?.user ?? null;
+}
+
 type Store = {
   family: Family;
   users: User[];
   chores: Chore[];
   assignments: Assignment[];
   rewards: Reward[];
+  gardenItems: GardenItem[];
+  grown: number;
   currentSiblingId: string;
   onboarded: boolean;
   offlineMode: boolean;
@@ -196,6 +227,9 @@ type Store = {
   setCurrentSibling: (id: string) => void;
   completeFamilySetup: (f: Family, kids: { name: string; age: number }[]) => void;
   submitProof: (assignmentId: string, photoUrl?: string) => void;
+  setCheckIn: (assignmentId: string, checkIn: CheckIn) => void;
+  acceptHelp: (assignmentId: string, helperId: string) => void;
+  suggestHelper: (assignmentId: string) => User | null;
   approve: (assignmentId: string) => void;
   reject: (assignmentId: string) => void;
   swap: (assignmentId: string, toUserId: string) => void;

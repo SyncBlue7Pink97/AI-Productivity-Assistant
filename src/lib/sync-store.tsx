@@ -35,7 +35,17 @@ export type Chore = {
   minAge: number;
   category: Category;
   emoji: string;
+  dueTime?: string | undefined;
   hardLastWeekFor?: string[] | undefined;
+};
+
+export type CheckIn = "can" | "help";
+
+export type GardenItem = {
+  id: string;
+  label: string;
+  emoji: string;
+  unlockAt: number;
 };
 
 export type Assignment = {
@@ -44,8 +54,29 @@ export type Assignment = {
   userId: string;
   status: AssignmentStatus;
   photoUrl?: string | undefined;
+  checkIn?: CheckIn | undefined;
+  helperId?: string | undefined;
   day: string;
 };
+
+export const HELP_BONUS = 5;
+
+export const RURAL_GARDEN: GardenItem[] = [
+  { id: "g1", label: "Seedling", emoji: "🌱", unlockAt: 0 },
+  { id: "g2", label: "Chicken", emoji: "🐔", unlockAt: 2 },
+  { id: "g3", label: "Maize patch", emoji: "🌽", unlockAt: 4 },
+  { id: "g4", label: "Goat", emoji: "🐐", unlockAt: 6 },
+  { id: "g5", label: "Marula tree", emoji: "🌳", unlockAt: 9 },
+  { id: "g6", label: "Homestead", emoji: "🏡", unlockAt: 12 },
+];
+
+export const URBAN_GARDEN: GardenItem[] = [
+  { id: "g1", label: "Balcony plant", emoji: "🪴", unlockAt: 0 },
+  { id: "g2", label: "Cat", emoji: "🐱", unlockAt: 2 },
+  { id: "g3", label: "Cosy lounge", emoji: "🛋️", unlockAt: 4 },
+  { id: "g4", label: "Puppy", emoji: "🐶", unlockAt: 6 },
+  { id: "g5", label: "Rooftop garden", emoji: "🌇", unlockAt: 9 },
+];
 
 export type Reward = {
   id: string;

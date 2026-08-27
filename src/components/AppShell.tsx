@@ -52,7 +52,7 @@ export function AppShell({
               <li key={to}>
                 <Link
                   to={to}
-                  className={`flex w-20 flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-bold transition-colors ${
+                  className={`flex w-[66px] flex-col items-center gap-1 rounded-2xl py-2 text-[10px] font-bold transition-colors ${
                     active
                       ? "bg-primary-container text-on-primary-container"
                       : "text-muted-foreground"

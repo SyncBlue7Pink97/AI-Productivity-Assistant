@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GardenRouteImport } from './routes/garden'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ParentRouteImport } from './routes/parent'
 import { Route as RewardsRouteImport } from './routes/rewards'
@@ -18,6 +19,11 @@ import { Route as SiblingRouteImport } from './routes/sibling'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GardenRoute = GardenRouteImport.update({
+  id: '/garden',
+  path: '/garden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -43,6 +49,7 @@ const SiblingRoute = SiblingRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/garden': typeof GardenRoute
   '/leaderboard': typeof LeaderboardRoute
   '/parent': typeof ParentRoute
   '/rewards': typeof RewardsRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/garden': typeof GardenRoute
   '/leaderboard': typeof LeaderboardRoute
   '/parent': typeof ParentRoute
   '/rewards': typeof RewardsRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/garden': typeof GardenRoute
   '/leaderboard': typeof LeaderboardRoute
   '/parent': typeof ParentRoute
   '/rewards': typeof RewardsRoute
@@ -65,14 +74,23 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leaderboard' | '/parent' | '/rewards' | '/sibling'
+  fullPaths:
+    '/' | '/garden' | '/leaderboard' | '/parent' | '/rewards' | '/sibling'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leaderboard' | '/parent' | '/rewards' | '/sibling'
-  id: '__root__' | '/' | '/leaderboard' | '/parent' | '/rewards' | '/sibling'
+  to: '/' | '/garden' | '/leaderboard' | '/parent' | '/rewards' | '/sibling'
+  id:
+    | '__root__'
+    | '/'
+    | '/garden'
+    | '/leaderboard'
+    | '/parent'
+    | '/rewards'
+    | '/sibling'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GardenRoute: typeof GardenRoute
   LeaderboardRoute: typeof LeaderboardRoute
   ParentRoute: typeof ParentRoute
   RewardsRoute: typeof RewardsRoute
@@ -86,6 +104,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garden': {
+      id: '/garden'
+      path: '/garden'
+      fullPath: '/garden'
+      preLoaderRoute: typeof GardenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -121,6 +146,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GardenRoute: GardenRoute,
   LeaderboardRoute: LeaderboardRoute,
   ParentRoute: ParentRoute,
   RewardsRoute: RewardsRoute,

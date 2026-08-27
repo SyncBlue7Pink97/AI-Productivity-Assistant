@@ -79,6 +79,84 @@ function ParentHome() {
         </button>
       </section>
 
+      <section className="card-soft p-5">
+        <h2 className="text-lg font-extrabold">Today's check-ins</h2>
+        <p className="text-xs font-semibold text-muted-foreground">
+          One glance instead of chasing every task
+        </p>
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+          {[
+            { label: "Confirmed", value: confirmed.length, tone: "bg-success/25 text-success-foreground" },
+            { label: "Need help", value: needHelp.length, tone: "bg-warning/30 text-warning-foreground" },
+            { label: "Pending", value: pending.length, tone: "bg-secondary-container text-on-secondary-container" },
+          ].map((s) => (
+            <div key={s.label} className={`rounded-3xl py-4 ${s.tone}`}>
+              <p className="text-2xl font-extrabold">{s.value}</p>
+              <p className="text-[11px] font-bold">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <ul className="mt-4 space-y-2">
+          {siblings.map((s) => {
+            const own = assignments.filter((a) => a.userId === s.id);
+            const help = own.filter((a) => a.checkIn === "help" && a.status === "todo").length;
+            const ok = own.filter((a) => a.checkIn === "can").length;
+            const wait = own.filter((a) => a.status === "pending").length;
+            return (
+              <li
+                key={s.id}
+                className="flex items-center justify-between rounded-2xl bg-surface-2 px-4 py-3 text-sm font-bold"
+              >
+                <span>
+                  {s.emoji} {s.name}
+                </span>
+                <span className="text-xs font-bold text-muted-foreground">
+                  {help > 0 ? `🙋 needs help (${help})` : ok > 0 ? "👍 confirmed" : "— no check-in"}
+                  {wait > 0 ? ` · ⏳ ${wait} pending` : ""}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+
+        {needHelp.map((a) => {
+          const chore = chores.find((c) => c.id === a.choreId);
+          const kid = users.find((u) => u.id === a.userId);
+          const helper = suggestHelper(a.id);
+          const accepted = users.find((u) => u.id === a.helperId);
+          if (!chore || !kid) return null;
+          return (
+            <div key={a.id} className="mt-3 rounded-3xl bg-primary-container p-4">
+              {accepted ? (
+                <p className="text-sm font-bold text-on-primary-container">
+                  🤝 {accepted.name} is helping {kid.name} with {chore.title} — +{HELP_BONUS} bonus
+                  points added.
+                </p>
+              ) : helper ? (
+                <>
+                  <p className="text-sm font-bold text-on-primary-container">
+                    {kid.name} needs help with {chore.title.toLowerCase()} — {helper.name} can
+                    assist for {HELP_BONUS} bonus points.
+                  </p>
+                  <button
+                    onClick={() => acceptHelp(a.id, helper.id)}
+                    className="mt-3 w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+                  >
+                    Accept fair match
+                  </button>
+                </>
+              ) : (
+                <p className="text-sm font-bold text-on-primary-container">
+                  {kid.name} needs help with {chore.title.toLowerCase()} — no age-eligible sibling
+                  is free right now.
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </section>
+
       <FairnessBreakdown />
 
       <section className="space-y-3">

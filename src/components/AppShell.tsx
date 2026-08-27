@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Home, BarChart3, Trophy, Gift } from "lucide-react";
+import { Home, BarChart3, Trophy, Gift, Sprout } from "lucide-react";
 import { useSync } from "@/lib/sync-store";
 
 const tabs = [
   { to: "/sibling", label: "My Sync", Icon: Home },
   { to: "/parent", label: "Parent", Icon: BarChart3 },
+  { to: "/garden", label: "Garden", Icon: Sprout },
   { to: "/leaderboard", label: "Ranks", Icon: Trophy },
   { to: "/rewards", label: "Rewards", Icon: Gift },
 ] as const;
@@ -51,7 +52,7 @@ export function AppShell({
               <li key={to}>
                 <Link
                   to={to}
-                  className={`flex w-20 flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-bold transition-colors ${
+                  className={`flex w-[66px] flex-col items-center gap-1 rounded-2xl py-2 text-[10px] font-bold transition-colors ${
                     active
                       ? "bg-primary-container text-on-primary-container"
                       : "text-muted-foreground"

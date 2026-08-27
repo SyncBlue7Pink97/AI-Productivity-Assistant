@@ -35,7 +35,17 @@ export type Chore = {
   minAge: number;
   category: Category;
   emoji: string;
+  dueTime?: string | undefined;
   hardLastWeekFor?: string[] | undefined;
+};
+
+export type CheckIn = "can" | "help";
+
+export type GardenItem = {
+  id: string;
+  label: string;
+  emoji: string;
+  unlockAt: number;
 };
 
 export type Assignment = {
@@ -44,8 +54,29 @@ export type Assignment = {
   userId: string;
   status: AssignmentStatus;
   photoUrl?: string | undefined;
+  checkIn?: CheckIn | undefined;
+  helperId?: string | undefined;
   day: string;
 };
+
+export const HELP_BONUS = 5;
+
+export const RURAL_GARDEN: GardenItem[] = [
+  { id: "g1", label: "Seedling", emoji: "🌱", unlockAt: 0 },
+  { id: "g2", label: "Chicken", emoji: "🐔", unlockAt: 2 },
+  { id: "g3", label: "Maize patch", emoji: "🌽", unlockAt: 4 },
+  { id: "g4", label: "Goat", emoji: "🐐", unlockAt: 6 },
+  { id: "g5", label: "Marula tree", emoji: "🌳", unlockAt: 9 },
+  { id: "g6", label: "Homestead", emoji: "🏡", unlockAt: 12 },
+];
+
+export const URBAN_GARDEN: GardenItem[] = [
+  { id: "g1", label: "Balcony plant", emoji: "🪴", unlockAt: 0 },
+  { id: "g2", label: "Cat", emoji: "🐱", unlockAt: 2 },
+  { id: "g3", label: "Cosy lounge", emoji: "🛋️", unlockAt: 4 },
+  { id: "g4", label: "Puppy", emoji: "🐶", unlockAt: 6 },
+  { id: "g5", label: "Rooftop garden", emoji: "🌇", unlockAt: 9 },
+];
 
 export type Reward = {
   id: string;
@@ -56,19 +87,19 @@ export type Reward = {
 };
 
 export const RURAL_CHORES: Chore[] = [
-  { id: "c-water", title: "Fetch water", points: 30, minAge: 13, category: "rural", emoji: "🪣" },
-  { id: "c-chickens", title: "Feed chickens", points: 10, minAge: 5, category: "rural", emoji: "🐔" },
-  { id: "c-firewood", title: "Collect firewood", points: 30, minAge: 13, category: "rural", emoji: "🪵" },
-  { id: "c-yard", title: "Sweep yard", points: 20, minAge: 9, category: "rural", emoji: "🧹" },
-  { id: "c-goats", title: "Herd goats", points: 30, minAge: 13, category: "rural", emoji: "🐐" },
+  { id: "c-water", title: "Fetch water", points: 30, minAge: 13, category: "rural", emoji: "🪣", dueTime: "07:00" },
+  { id: "c-chickens", title: "Feed chickens", points: 10, minAge: 5, category: "rural", emoji: "🐔", dueTime: "07:30" },
+  { id: "c-firewood", title: "Collect firewood", points: 30, minAge: 13, category: "rural", emoji: "🪵", dueTime: "16:00" },
+  { id: "c-yard", title: "Sweep yard", points: 20, minAge: 9, category: "rural", emoji: "🧹", dueTime: "15:00" },
+  { id: "c-goats", title: "Herd goats", points: 30, minAge: 13, category: "rural", emoji: "🐐", dueTime: "06:30" },
 ];
 
 export const URBAN_CHORES: Chore[] = [
-  { id: "c-dishes", title: "Wash dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️" },
-  { id: "c-toys", title: "Pack away toys", points: 10, minAge: 5, category: "indoor", emoji: "🧸" },
-  { id: "c-bins", title: "Take out bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️" },
-  { id: "c-laundry", title: "Fold laundry", points: 30, minAge: 13, category: "indoor", emoji: "👕" },
-  { id: "c-vacuum", title: "Vacuum lounge", points: 30, minAge: 13, category: "indoor", emoji: "🧽" },
+  { id: "c-dishes", title: "Wash dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️", dueTime: "19:00" },
+  { id: "c-toys", title: "Pack away toys", points: 10, minAge: 5, category: "indoor", emoji: "🧸", dueTime: "18:00" },
+  { id: "c-bins", title: "Take out bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️", dueTime: "17:30" },
+  { id: "c-laundry", title: "Fold laundry", points: 30, minAge: 13, category: "indoor", emoji: "👕", dueTime: "16:30" },
+  { id: "c-vacuum", title: "Vacuum lounge", points: 30, minAge: 13, category: "indoor", emoji: "🧽", dueTime: "15:30" },
 ];
 
 export function difficultyOf(chore: Chore): Difficulty {
@@ -139,7 +170,7 @@ const seedUsers: User[] = [
 
 const seedAssignments: Assignment[] = [
   { id: "a1", choreId: "c-water", userId: "u-amahle", status: "todo", day: "today" },
-  { id: "a2", choreId: "c-yard", userId: "u-thabo", status: "todo", day: "today" },
+  { id: "a2", choreId: "c-yard", userId: "u-thabo", status: "todo", checkIn: "help", day: "today" },
   { id: "a3", choreId: "c-chickens", userId: "u-lindiwe", status: "pending", day: "today" },
   { id: "a4", choreId: "c-goats", userId: "u-amahle", status: "todo", day: "today" },
 ];
@@ -152,12 +183,43 @@ const seedRewards: Reward[] = [
   { id: "r5", title: "New soccer ball", cost: 500, emoji: "⚽" },
 ];
 
+/** Picks the fairest sibling to help: age-eligible, own chores done, lightest load. */
+export function suggestHelper(
+  assignment: Assignment,
+  chores: Chore[],
+  users: User[],
+  assignments: Assignment[],
+): User | null {
+  const chore = chores.find((c) => c.id === assignment.choreId);
+  if (!chore) return null;
+  const candidates = users.filter(
+    (u) =>
+      u.role === "sibling" &&
+      u.id !== assignment.userId &&
+      u.age >= chore.minAge &&
+      allowedDifficulties(u.age).includes(difficultyOf(chore)),
+  );
+  const scored = candidates.map((u) => {
+    const own = assignments.filter((a) => a.userId === u.id);
+    const openOwn = own.filter((a) => a.status === "todo").length;
+    const load = own.reduce((sum, a) => {
+      const c = chores.find((x) => x.id === a.choreId);
+      return sum + (c ? weightedPoints(c.points, u.age) : 0);
+    }, 0);
+    return { user: u, openOwn, load };
+  });
+  scored.sort((a, b) => a.openOwn - b.openOwn || a.load - b.load);
+  return scored[0]?.user ?? null;
+}
+
 type Store = {
   family: Family;
   users: User[];
   chores: Chore[];
   assignments: Assignment[];
   rewards: Reward[];
+  gardenItems: GardenItem[];
+  grown: number;
   currentSiblingId: string;
   onboarded: boolean;
   offlineMode: boolean;
@@ -165,6 +227,9 @@ type Store = {
   setCurrentSibling: (id: string) => void;
   completeFamilySetup: (f: Family, kids: { name: string; age: number }[]) => void;
   submitProof: (assignmentId: string, photoUrl?: string) => void;
+  setCheckIn: (assignmentId: string, checkIn: CheckIn) => void;
+  acceptHelp: (assignmentId: string, helperId: string) => void;
+  suggestHelper: (assignmentId: string) => User | null;
   approve: (assignmentId: string) => void;
   reject: (assignmentId: string) => void;
   swap: (assignmentId: string, toUserId: string) => void;
@@ -196,6 +261,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       chores,
       assignments,
       rewards,
+      gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
+      grown: assignments.filter((a) => a.status === "approved").length,
       currentSiblingId,
       onboarded,
       offlineMode,
@@ -232,6 +299,24 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             a.id === id ? { ...a, status: "pending", photoUrl } : a,
           ),
         ),
+      setCheckIn: (id, checkIn) =>
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, checkIn } : a)),
+        ),
+      acceptHelp: (id, helperId) => {
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, helperId } : a)),
+        );
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === helperId ? { ...u, points: u.points + HELP_BONUS } : u,
+          ),
+        );
+      },
+      suggestHelper: (id) => {
+        const a = assignments.find((x) => x.id === id);
+        return a ? suggestHelper(a, chores, users, assignments) : null;
+      },
       approve: (id) => {
         const a = assignments.find((x) => x.id === id);
         if (!a) return;

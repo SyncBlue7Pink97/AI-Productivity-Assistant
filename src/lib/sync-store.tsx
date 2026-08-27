@@ -261,6 +261,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       chores,
       assignments,
       rewards,
+      gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
+      grown: assignments.filter((a) => a.status === "approved").length,
       currentSiblingId,
       onboarded,
       offlineMode,

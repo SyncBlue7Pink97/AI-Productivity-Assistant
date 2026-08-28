@@ -165,8 +165,13 @@ type Store = {
   currentSiblingId: string;
   onboarded: boolean;
   offlineMode: boolean;
+  viewerRole: Role;
+  parentPin: string;
+  unlockParent: (pin: string) => boolean;
+  lockParent: () => void;
   setOfflineMode: (v: boolean) => void;
   setCurrentSibling: (id: string) => void;
+
   completeFamilySetup: (f: Family, kids: { name: string; age: number }[]) => void;
   submitProof: (assignmentId: string, photoUrl?: string) => void;
   approve: (assignmentId: string) => void;

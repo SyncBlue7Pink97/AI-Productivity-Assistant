@@ -39,6 +39,7 @@ function SiblingHome() {
     swap,
     family,
     offlineMode,
+    setCheckIn,
   } = useSync();
   const [swapFor, setSwapFor] = useState<string | null>(null);
 
@@ -49,6 +50,11 @@ function SiblingHome() {
   const mine = assignments.filter((a) => a.userId === me.id);
   const eligible = filterChoresByAge(chores, me.age);
   const noPhoto = family.locationType === "rural" && offlineMode;
+  const totalPoints = mine.reduce((sum, a) => {
+    const c = chores.find((x) => x.id === a.choreId);
+    return sum + (c ? weightedPoints(c.points, me.age) : 0);
+  }, 0);
+  const left = mine.filter((a) => a.status !== "approved").length;
 
   return (
     <AppShell title={`Hi ${me.name} 👋`} subtitle="My Sync Today">

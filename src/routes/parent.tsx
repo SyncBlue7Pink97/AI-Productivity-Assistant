@@ -2,7 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { FairnessBreakdown } from "@/components/FairnessBreakdown";
-import { useSync, difficultyOf, weightedPoints, type Category } from "@/lib/sync-store";
+import { FamilyGarden } from "@/components/FamilyGarden";
+import {
+  useSync,
+  difficultyOf,
+  weightedPoints,
+  suggestHelper,
+  HELP_BONUS,
+  type Category,
+} from "@/lib/sync-store";
 
 export const Route = createFileRoute("/parent")({
   head: () => ({
@@ -24,9 +32,26 @@ export const Route = createFileRoute("/parent")({
 });
 
 function ParentHome() {
-  const { users, chores, assignments, approve, reject, addChore, rotate, family } = useSync();
+  const { users, chores, assignments, approve, reject, addChore, rotate, family, acceptHelp } =
+    useSync();
   const siblings = users.filter((u) => u.role === "sibling");
   const pending = assignments.filter((a) => a.status === "pending");
+  const done = assignments.filter((a) => a.status === "approved");
+  const canDo = assignments.filter((a) => a.checkIn === "can-do" && a.status === "todo");
+  const needHelp = assignments.filter(
+    (a) => a.checkIn === "need-help" && a.status === "todo" && !a.helperId,
+  );
+  const helpSuggestions = needHelp
+    .map((a) => {
+      const chore = chores.find((c) => c.id === a.choreId);
+      if (!chore) return null;
+      const helper = suggestHelper(a, chore, siblings, assignments);
+      const kid = users.find((u) => u.id === a.userId);
+      if (!helper || !kid) return null;
+      return { a, chore, helper, kid };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+
 
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -49,6 +74,52 @@ function ParentHome() {
 
   return (
     <AppShell title="Parent Home" subtitle="Keeping the week fair">
+      <section className="card-soft p-5">
+        <h2 className="text-lg font-extrabold">Today's family check-in</h2>
+        <p className="text-xs font-semibold text-muted-foreground">
+          A quick summary — no need to inspect every task
+        </p>
+        <div className="mt-3 grid grid-cols-4 gap-2 text-center">
+          {[
+            { label: "Can do", value: canDo.length, emoji: "👍" },
+            { label: "Need help", value: needHelp.length, emoji: "🙋" },
+            { label: "To approve", value: pending.length, emoji: "⏳" },
+            { label: "Done", value: done.length, emoji: "🎉" },
+          ].map((s) => (
+            <div key={s.label} className="rounded-2xl bg-surface-2 px-1 py-3">
+              <p className="text-lg">{s.emoji}</p>
+              <p className="text-xl font-extrabold">{s.value}</p>
+              <p className="text-[10px] font-bold text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {helpSuggestions.length === 0 ? (
+          <p className="mt-3 rounded-2xl bg-surface-2 px-4 py-3 text-sm font-semibold text-muted-foreground">
+            Nobody has asked for help today.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {helpSuggestions.map(({ a, chore, helper, kid }) => (
+              <li key={a.id} className="rounded-2xl bg-secondary-container p-4">
+                <p className="text-sm font-bold text-on-secondary-container">
+                  {kid.name} needs help with {chore.title.toLowerCase()}. {helper.name} has
+                  finished their chores and can assist for {HELP_BONUS} bonus points.
+                </p>
+                <button
+                  onClick={() => acceptHelp(a.id, helper.id)}
+                  className="mt-3 w-full rounded-2xl bg-primary py-2.5 text-sm font-extrabold text-primary-foreground"
+                >
+                  🤝 Ask {helper.name} to help
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <FamilyGarden compact />
+
       <section className="card-soft p-5">
         <h2 className="text-lg font-extrabold">Weekly fairness</h2>
         <p className="text-xs font-semibold text-muted-foreground">

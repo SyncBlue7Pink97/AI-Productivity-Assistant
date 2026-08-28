@@ -39,6 +39,7 @@ function SiblingHome() {
     swap,
     family,
     offlineMode,
+    setCheckIn,
   } = useSync();
   const [swapFor, setSwapFor] = useState<string | null>(null);
 
@@ -49,6 +50,11 @@ function SiblingHome() {
   const mine = assignments.filter((a) => a.userId === me.id);
   const eligible = filterChoresByAge(chores, me.age);
   const noPhoto = family.locationType === "rural" && offlineMode;
+  const totalPoints = mine.reduce((sum, a) => {
+    const c = chores.find((x) => x.id === a.choreId);
+    return sum + (c ? weightedPoints(c.points, me.age) : 0);
+  }, 0);
+  const left = mine.filter((a) => a.status !== "approved").length;
 
   return (
     <AppShell title={`Hi ${me.name} 👋`} subtitle="My Sync Today">
@@ -80,7 +86,20 @@ function SiblingHome() {
         <AgeBadge tone={badge.tone} label={badge.label} />
       </div>
 
+      <section className="card-soft bg-primary-container p-5">
+        <h2 className="text-lg font-extrabold text-on-primary-container">Today's plan 🗓️</h2>
+        <p className="mt-1 text-sm font-bold text-on-primary-container/80">
+          {left > 0
+            ? `${left} chore${left > 1 ? "s" : ""} left · up to ${totalPoints} pts today`
+            : "All done for today — enjoy your day!"}
+        </p>
+        <p className="mt-1 text-xs font-semibold text-on-primary-container/70">
+          Tap “I can do it” or “Need help” so everyone knows the plan — no arguments.
+        </p>
+      </section>
+
       <ul className="space-y-3">
+
         {mine.map((a) => {
           const chore = chores.find((c) => c.id === a.choreId);
           if (!chore) return null;
@@ -104,9 +123,46 @@ function SiblingHome() {
                     <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
                       age-weighted {weightedPoints(chore.points, me.age)} pts
                     </span>
+                    {chore.dueTime && (
+                      <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
+                        ⏰ due {chore.dueTime}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
+
+              {a.status === "todo" && (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setCheckIn(a.id, "can-do")}
+                    className={`rounded-2xl py-2.5 text-xs font-extrabold ${
+                      a.checkIn === "can-do"
+                        ? "bg-success/40 text-success-foreground"
+                        : "bg-surface-2 text-muted-foreground"
+                    }`}
+                  >
+                    👍 I can do it
+                  </button>
+                  <button
+                    onClick={() => setCheckIn(a.id, "need-help")}
+                    className={`rounded-2xl py-2.5 text-xs font-extrabold ${
+                      a.checkIn === "need-help"
+                        ? "bg-warning/40 text-warning-foreground"
+                        : "bg-surface-2 text-muted-foreground"
+                    }`}
+                  >
+                    🙋 Need help
+                  </button>
+                </div>
+              )}
+
+              {a.helperId && (
+                <p className="mt-2 rounded-2xl bg-secondary-container px-4 py-2.5 text-xs font-bold text-on-secondary-container">
+                  🤝 {users.find((u) => u.id === a.helperId)?.name} is helping with this one.
+                </p>
+              )}
+
 
               {a.status === "todo" && (
                 <div className="mt-3 flex gap-2">

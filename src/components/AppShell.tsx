@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Home, BarChart3, Trophy, Gift } from "lucide-react";
+import { Home, BarChart3, Trophy, Gift, Sprout } from "lucide-react";
 import { useSync } from "@/lib/sync-store";
 
 const tabs = [
   { to: "/sibling", label: "My Sync", Icon: Home },
   { to: "/parent", label: "Parent", Icon: BarChart3 },
+  { to: "/garden", label: "Garden", Icon: Sprout },
   { to: "/leaderboard", label: "Ranks", Icon: Trophy },
   { to: "/rewards", label: "Rewards", Icon: Gift },
 ] as const;

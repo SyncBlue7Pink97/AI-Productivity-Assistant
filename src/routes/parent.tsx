@@ -75,6 +75,52 @@ function ParentHome() {
   return (
     <AppShell title="Parent Home" subtitle="Keeping the week fair">
       <section className="card-soft p-5">
+        <h2 className="text-lg font-extrabold">Today's family check-in</h2>
+        <p className="text-xs font-semibold text-muted-foreground">
+          A quick summary — no need to inspect every task
+        </p>
+        <div className="mt-3 grid grid-cols-4 gap-2 text-center">
+          {[
+            { label: "Can do", value: canDo.length, emoji: "👍" },
+            { label: "Need help", value: needHelp.length, emoji: "🙋" },
+            { label: "To approve", value: pending.length, emoji: "⏳" },
+            { label: "Done", value: done.length, emoji: "🎉" },
+          ].map((s) => (
+            <div key={s.label} className="rounded-2xl bg-surface-2 px-1 py-3">
+              <p className="text-lg">{s.emoji}</p>
+              <p className="text-xl font-extrabold">{s.value}</p>
+              <p className="text-[10px] font-bold text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {helpSuggestions.length === 0 ? (
+          <p className="mt-3 rounded-2xl bg-surface-2 px-4 py-3 text-sm font-semibold text-muted-foreground">
+            Nobody has asked for help today.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {helpSuggestions.map(({ a, chore, helper, kid }) => (
+              <li key={a.id} className="rounded-2xl bg-secondary-container p-4">
+                <p className="text-sm font-bold text-on-secondary-container">
+                  {kid.name} needs help with {chore.title.toLowerCase()}. {helper.name} has
+                  finished their chores and can assist for {HELP_BONUS} bonus points.
+                </p>
+                <button
+                  onClick={() => acceptHelp(a.id, helper.id)}
+                  className="mt-3 w-full rounded-2xl bg-primary py-2.5 text-sm font-extrabold text-primary-foreground"
+                >
+                  🤝 Ask {helper.name} to help
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <FamilyGarden compact />
+
+      <section className="card-soft p-5">
         <h2 className="text-lg font-extrabold">Weekly fairness</h2>
         <p className="text-xs font-semibold text-muted-foreground">
           Age-weighted workload — bars should look even

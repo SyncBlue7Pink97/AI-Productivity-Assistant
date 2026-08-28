@@ -32,9 +32,26 @@ export const Route = createFileRoute("/parent")({
 });
 
 function ParentHome() {
-  const { users, chores, assignments, approve, reject, addChore, rotate, family } = useSync();
+  const { users, chores, assignments, approve, reject, addChore, rotate, family, acceptHelp } =
+    useSync();
   const siblings = users.filter((u) => u.role === "sibling");
   const pending = assignments.filter((a) => a.status === "pending");
+  const done = assignments.filter((a) => a.status === "approved");
+  const canDo = assignments.filter((a) => a.checkIn === "can-do" && a.status === "todo");
+  const needHelp = assignments.filter(
+    (a) => a.checkIn === "need-help" && a.status === "todo" && !a.helperId,
+  );
+  const helpSuggestions = needHelp
+    .map((a) => {
+      const chore = chores.find((c) => c.id === a.choreId);
+      if (!chore) return null;
+      const helper = suggestHelper(a, chore, siblings, assignments);
+      const kid = users.find((u) => u.id === a.userId);
+      if (!helper || !kid) return null;
+      return { a, chore, helper, kid };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+
 
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");

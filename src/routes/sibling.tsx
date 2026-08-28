@@ -86,7 +86,20 @@ function SiblingHome() {
         <AgeBadge tone={badge.tone} label={badge.label} />
       </div>
 
+      <section className="card-soft bg-primary-container p-5">
+        <h2 className="text-lg font-extrabold text-on-primary-container">Today's plan 🗓️</h2>
+        <p className="mt-1 text-sm font-bold text-on-primary-container/80">
+          {left > 0
+            ? `${left} chore${left > 1 ? "s" : ""} left · up to ${totalPoints} pts today`
+            : "All done for today — enjoy your day!"}
+        </p>
+        <p className="mt-1 text-xs font-semibold text-on-primary-container/70">
+          Tap “I can do it” or “Need help” so everyone knows the plan — no arguments.
+        </p>
+      </section>
+
       <ul className="space-y-3">
+
         {mine.map((a) => {
           const chore = chores.find((c) => c.id === a.choreId);
           if (!chore) return null;

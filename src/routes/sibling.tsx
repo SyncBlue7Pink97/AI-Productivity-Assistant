@@ -123,9 +123,46 @@ function SiblingHome() {
                     <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
                       age-weighted {weightedPoints(chore.points, me.age)} pts
                     </span>
+                    {chore.dueTime && (
+                      <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
+                        ⏰ due {chore.dueTime}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
+
+              {a.status === "todo" && (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setCheckIn(a.id, "can-do")}
+                    className={`rounded-2xl py-2.5 text-xs font-extrabold ${
+                      a.checkIn === "can-do"
+                        ? "bg-success/40 text-success-foreground"
+                        : "bg-surface-2 text-muted-foreground"
+                    }`}
+                  >
+                    👍 I can do it
+                  </button>
+                  <button
+                    onClick={() => setCheckIn(a.id, "need-help")}
+                    className={`rounded-2xl py-2.5 text-xs font-extrabold ${
+                      a.checkIn === "need-help"
+                        ? "bg-warning/40 text-warning-foreground"
+                        : "bg-surface-2 text-muted-foreground"
+                    }`}
+                  >
+                    🙋 Need help
+                  </button>
+                </div>
+              )}
+
+              {a.helperId && (
+                <p className="mt-2 rounded-2xl bg-secondary-container px-4 py-2.5 text-xs font-bold text-on-secondary-container">
+                  🤝 {users.find((u) => u.id === a.helperId)?.name} is helping with this one.
+                </p>
+              )}
+
 
               {a.status === "todo" && (
                 <div className="mt-3 flex gap-2">

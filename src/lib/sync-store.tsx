@@ -233,7 +233,14 @@ export function suggestHelper(
 
 export const HELP_BONUS = 5;
 
-const StoreContext = createContext<Store | null>(null);
+// Keep a single context instance across HMR updates, otherwise a hot-reloaded
+// module creates a new context while the mounted provider still uses the old one.
+const globalRef = globalThis as unknown as {
+  __siblingSyncContext?: React.Context<Store | null>;
+};
+const StoreContext =
+  globalRef.__siblingSyncContext ?? createContext<Store | null>(null);
+globalRef.__siblingSyncContext = StoreContext;
 
 export function SyncProvider({ children }: { children: ReactNode }) {
   const [family, setFamily] = useState<Family>({

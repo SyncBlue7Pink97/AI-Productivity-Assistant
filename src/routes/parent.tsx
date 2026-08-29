@@ -337,6 +337,14 @@ function ParentDashboard() {
           </div>
         )}
       </section>
+
+      <button
+        onClick={lockParent}
+        className="w-full rounded-2xl bg-surface-2 py-3 text-sm font-extrabold text-muted-foreground"
+      >
+        🔒 Switch to kid view
+      </button>
     </AppShell>
+
   );
 }

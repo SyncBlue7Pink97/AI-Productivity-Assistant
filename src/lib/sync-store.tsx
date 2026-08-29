@@ -381,7 +381,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         );
       },
     }),
-    [family, users, chores, assignments, rewards, currentSiblingId, onboarded, offlineMode],
+    [family, users, chores, assignments, rewards, currentSiblingId, onboarded, offlineMode, viewerRole],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

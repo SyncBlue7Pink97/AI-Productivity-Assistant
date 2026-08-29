@@ -21,7 +21,9 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { family, offlineMode } = useSync();
+  const { family, offlineMode, viewerRole } = useSync();
+  const visibleTabs = tabs.filter((t) => t.to !== "/parent" || viewerRole === "parent");
+
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background">

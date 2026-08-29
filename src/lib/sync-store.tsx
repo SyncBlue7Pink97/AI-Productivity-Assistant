@@ -263,7 +263,18 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       currentSiblingId,
       onboarded,
       offlineMode,
+      viewerRole,
+      parentPin,
+      unlockParent: (pin: string) => {
+        if (pin === parentPin) {
+          setViewerRole("parent");
+          return true;
+        }
+        return false;
+      },
+      lockParent: () => setViewerRole("sibling"),
       setOfflineMode,
+
       setCurrentSibling,
       completeFamilySetup: (f, kids) => {
         setFamily(f);

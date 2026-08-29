@@ -37,7 +37,16 @@ export function AppShell({
               📴 Offline mode
             </span>
           )}
+          {viewerRole !== "parent" && (
+            <Link
+              to="/parent"
+              className="rounded-full bg-card/70 px-3 py-1 text-xs font-bold text-on-primary-container"
+            >
+              🔒 Parent
+            </Link>
+          )}
         </div>
+
         <h1 className="mt-4 text-3xl font-extrabold text-primary-foreground">{title}</h1>
         {subtitle && (
           <p className="mt-1 text-sm font-semibold text-primary-foreground/80">{subtitle}</p>

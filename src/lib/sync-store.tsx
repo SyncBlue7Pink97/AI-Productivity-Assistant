@@ -237,7 +237,7 @@ export const HELP_BONUS = 5;
 // Keep a single context instance across HMR updates, otherwise a hot-reloaded
 // module creates a new context while the mounted provider still uses the old one.
 const globalRef = globalThis as unknown as {
-  __siblingSyncContext?: React.Context<Store | null>;
+  __siblingSyncContext?: Context<Store | null>;
 };
 const StoreContext =
   globalRef.__siblingSyncContext ?? createContext<Store | null>(null);

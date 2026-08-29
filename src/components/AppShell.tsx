@@ -48,7 +48,7 @@ export function AppShell({
 
       <nav className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-md border-t border-border bg-surface/95 px-2 py-2 backdrop-blur">
         <ul className="flex items-center justify-around">
-          {tabs.map(({ to, label, Icon }) => {
+          {visibleTabs.map(({ to, label, Icon }) => {
             const active = pathname === to;
             return (
               <li key={to}>

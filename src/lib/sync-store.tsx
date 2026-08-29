@@ -3,6 +3,7 @@ import {
   useContext,
   useMemo,
   useState,
+  type Context,
   type ReactNode,
 } from "react";
 

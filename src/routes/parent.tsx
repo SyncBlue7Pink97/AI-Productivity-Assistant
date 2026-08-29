@@ -31,9 +31,70 @@ export const Route = createFileRoute("/parent")({
   component: ParentHome,
 });
 
+function ParentGate() {
+  const { unlockParent } = useSync();
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState(false);
+
+  return (
+    <AppShell title="Parent Home" subtitle="Grown-ups only">
+      <section className="card-soft space-y-4 p-6 text-center">
+        <p className="text-5xl">🔒</p>
+        <h2 className="text-lg font-extrabold">Enter parent PIN</h2>
+        <p className="text-xs font-semibold text-muted-foreground">
+          This area is for parents — approvals, fairness and new chores.
+        </p>
+        <input
+          value={pin}
+          onChange={(e) => {
+            setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+            setError(false);
+          }}
+          inputMode="numeric"
+          type="password"
+          placeholder="••••"
+          className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-2xl font-extrabold tracking-[0.6em] outline-none focus:ring-2 focus:ring-ring"
+        />
+        {error && (
+          <p className="text-xs font-bold text-destructive">That PIN isn't right. Try again.</p>
+        )}
+        <button
+          onClick={() => {
+            if (!unlockParent(pin)) {
+              setError(true);
+              setPin("");
+            }
+          }}
+          className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+        >
+          Unlock parent home
+        </button>
+        <p className="text-[11px] font-semibold text-muted-foreground">Demo PIN: 1234</p>
+      </section>
+    </AppShell>
+  );
+}
+
 function ParentHome() {
-  const { users, chores, assignments, approve, reject, addChore, rotate, family, acceptHelp } =
-    useSync();
+  const { viewerRole } = useSync();
+  if (viewerRole !== "parent") return <ParentGate />;
+  return <ParentDashboard />;
+}
+
+function ParentDashboard() {
+  const {
+    users,
+    chores,
+    assignments,
+    approve,
+    reject,
+    addChore,
+    rotate,
+    family,
+    acceptHelp,
+    lockParent,
+  } = useSync();
+
   const siblings = users.filter((u) => u.role === "sibling");
   const pending = assignments.filter((a) => a.status === "pending");
   const done = assignments.filter((a) => a.status === "approved");

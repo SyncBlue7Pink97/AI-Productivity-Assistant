@@ -248,6 +248,10 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [currentSiblingId, setCurrentSibling] = useState("u-thabo");
   const [onboarded, setOnboarded] = useState(false);
   const [offlineMode, setOfflineMode] = useState(true);
+  const [viewerRole, setViewerRole] = useState<Role>("sibling");
+  const parentPin = "1234";
+
+
 
   const value = useMemo<Store>(
     () => ({
@@ -259,7 +263,18 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       currentSiblingId,
       onboarded,
       offlineMode,
+      viewerRole,
+      parentPin,
+      unlockParent: (pin: string) => {
+        if (pin === parentPin) {
+          setViewerRole("parent");
+          return true;
+        }
+        return false;
+      },
+      lockParent: () => setViewerRole("sibling"),
       setOfflineMode,
+
       setCurrentSibling,
       completeFamilySetup: (f, kids) => {
         setFamily(f);
@@ -366,7 +381,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         );
       },
     }),
-    [family, users, chores, assignments, rewards, currentSiblingId, onboarded, offlineMode],
+    [family, users, chores, assignments, rewards, currentSiblingId, onboarded, offlineMode, viewerRole],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

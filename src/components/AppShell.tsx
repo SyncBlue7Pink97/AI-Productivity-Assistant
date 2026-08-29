@@ -21,7 +21,9 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { family, offlineMode } = useSync();
+  const { family, offlineMode, viewerRole } = useSync();
+  const visibleTabs = tabs.filter((t) => t.to !== "/parent" || viewerRole === "parent");
+
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background">
@@ -35,7 +37,16 @@ export function AppShell({
               📴 Offline mode
             </span>
           )}
+          {viewerRole !== "parent" && (
+            <Link
+              to="/parent"
+              className="rounded-full bg-card/70 px-3 py-1 text-xs font-bold text-on-primary-container"
+            >
+              🔒 Parent
+            </Link>
+          )}
         </div>
+
         <h1 className="mt-4 text-3xl font-extrabold text-primary-foreground">{title}</h1>
         {subtitle && (
           <p className="mt-1 text-sm font-semibold text-primary-foreground/80">{subtitle}</p>
@@ -46,7 +57,7 @@ export function AppShell({
 
       <nav className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-md border-t border-border bg-surface/95 px-2 py-2 backdrop-blur">
         <ul className="flex items-center justify-around">
-          {tabs.map(({ to, label, Icon }) => {
+          {visibleTabs.map(({ to, label, Icon }) => {
             const active = pathname === to;
             return (
               <li key={to}>

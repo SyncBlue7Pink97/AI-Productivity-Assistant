@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { useSync, ageBadge } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/leaderboard")({
 
 function Leaderboard() {
   const { users } = useSync();
+  const { t } = useI18n();
   const siblings = users.filter((u) => u.role === "sibling");
   const ranked = [...siblings]
     .map((s) => ({
@@ -34,7 +36,7 @@ function Leaderboard() {
   const medals = ["🥇", "🥈", "🥉"];
 
   return (
-    <AppShell title="Leaderboard" subtitle="Age-adjusted, so it's actually fair">
+    <AppShell title={t("leaderboard")} subtitle={t("leaderboard_sub")}>
       {ranked.map((s, i) => {
         const badge = ageBadge(s.age);
         return (
@@ -49,7 +51,7 @@ function Leaderboard() {
                   {s.name} <span className="text-muted-foreground">· {s.age}</span>
                 </p>
                 <p className="text-xs font-bold text-muted-foreground">
-                  {s.points} pts · 🔥 {s.streak} day streak
+                  {t("pts_streak", { pts: s.points, streak: s.streak })}
                 </p>
               </div>
               <AgeBadge tone={badge.tone} label={badge.label} />
@@ -61,14 +63,13 @@ function Leaderboard() {
               />
             </div>
             <p className="mt-1 text-[11px] font-bold text-muted-foreground">
-              Fairness score {s.fairness}
+              {t("fairness_score", { n: s.fairness })}
             </p>
           </div>
         );
       })}
       <p className="card-soft p-4 text-xs font-semibold text-muted-foreground">
-        Fairness score divides points by an age factor, so a 7-year-old feeding chickens can still
-        top a 16-year-old fetching water.
+        {t("leaderboard_note")}
       </p>
     </AppShell>
   );

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { useSync } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/rewards")({
   head: () => ({
@@ -23,12 +24,13 @@ export const Route = createFileRoute("/rewards")({
 
 function Rewards() {
   const { rewards, users, currentSiblingId, setCurrentSibling, redeem } = useSync();
+  const { t } = useI18n();
   const siblings = users.filter((u) => u.role === "sibling");
   const me = siblings.find((s) => s.id === currentSiblingId) ?? siblings[0];
   if (!me) return null;
 
   return (
-    <AppShell title="Rewards" subtitle={`${me.name} has ${me.points} points to spend`}>
+    <AppShell title={t("rewards")} subtitle={t("points_to_spend", { name: me.name, pts: me.points })}>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {siblings.map((s) => (
           <button
@@ -54,7 +56,7 @@ function Rewards() {
             </div>
             <div className="flex-1">
               <p className="font-extrabold">{r.title}</p>
-              <p className="text-xs font-bold text-muted-foreground">{r.cost} points</p>
+              <p className="text-xs font-bold text-muted-foreground">{t("points_label", { n: r.cost })}</p>
             </div>
             <button
               disabled={!affordable}
@@ -67,7 +69,7 @@ function Rewards() {
                     : "bg-surface-2 text-muted-foreground"
               }`}
             >
-              {r.redeemed ? "Claimed" : affordable ? "Redeem" : "Locked"}
+              {r.redeemed ? t("claimed") : affordable ? t("redeem") : t("locked")}
             </button>
           </div>
         );

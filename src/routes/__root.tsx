@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SyncProvider } from "@/lib/sync-store";
+import { I18nProvider } from "@/lib/i18n";
 
 
 function NotFoundComponent() {
@@ -133,10 +134,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SyncProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </SyncProvider>
+      <I18nProvider>
+        <SyncProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </SyncProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { FamilyGarden } from "@/components/FamilyGarden";
 import { useSync } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/garden")({
   head: () => ({
@@ -24,14 +25,15 @@ export const Route = createFileRoute("/garden")({
 
 function GardenPage() {
   const { users, assignments, chores } = useSync();
+  const { t } = useI18n();
   const siblings = users.filter((u) => u.role === "sibling");
 
   return (
-    <AppShell title="Our Garden 🌱" subtitle="Grown by the whole family">
+    <AppShell title={t("our_garden")} subtitle={t("grown_by_family")}>
       <FamilyGarden />
 
       <section className="card-soft p-5">
-        <h2 className="text-lg font-extrabold">Who helped grow it</h2>
+        <h2 className="text-lg font-extrabold">{t("who_helped")}</h2>
         <ul className="mt-3 space-y-2">
           {siblings.map((s) => {
             const done = assignments.filter(
@@ -47,14 +49,14 @@ function GardenPage() {
                   {s.emoji} {s.name}
                 </span>
                 <span className="text-xs font-bold text-muted-foreground">
-                  {done.length} grown · {helped.length} helped
+                  {t("grown_helped", { grown: done.length, helped: helped.length })}
                 </span>
               </li>
             );
           })}
         </ul>
         <p className="mt-3 text-xs font-semibold text-muted-foreground">
-          {chores.length} chores in the family pool today.
+          {t("chores_in_pool", { n: chores.length })}
         </p>
       </section>
     </AppShell>

@@ -1,7 +1,9 @@
 import { useSync } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 export function FamilyGarden({ compact = false }: { compact?: boolean }) {
   const { gardenItems, grown, family } = useSync();
+  const { t } = useI18n();
   const next = gardenItems[grown];
   const pct = Math.min((grown / gardenItems.length) * 100, 100);
 
@@ -9,10 +11,13 @@ export function FamilyGarden({ compact = false }: { compact?: boolean }) {
     <section className="card-soft p-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-extrabold">Family garden</h2>
+          <h2 className="text-lg font-extrabold">{t("family_garden")}</h2>
           <p className="text-xs font-semibold text-muted-foreground">
-            {family.locationType === "rural" ? "Homestead" : "City garden"} grown together ·{" "}
-            {grown}/{gardenItems.length}
+            {t("grown_together", {
+              place: family.locationType === "rural" ? t("homestead") : t("city_garden"),
+              grown,
+              total: gardenItems.length,
+            })}
           </p>
         </div>
         <span className="text-3xl">{family.locationType === "rural" ? "🏡" : "🏙️"}</span>
@@ -41,7 +46,7 @@ export function FamilyGarden({ compact = false }: { compact?: boolean }) {
                 {unlocked ? item.emoji : "🌫️"}
               </span>
               <span className="text-[10px] font-bold leading-tight text-muted-foreground">
-                {unlocked ? item.label : "Locked"}
+                {unlocked ? item.label : t("locked")}
               </span>
             </li>
           );
@@ -51,8 +56,8 @@ export function FamilyGarden({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <p className="mt-4 rounded-2xl bg-secondary-container px-4 py-3 text-sm font-bold text-on-secondary-container">
           {next
-            ? `Next up: ${next.emoji} ${next.label} — one more approved chore unlocks it for everyone.`
-            : "🎉 The whole garden is grown. Amazing teamwork, family!"}
+            ? t("next_up", { emoji: next.emoji, label: next.label })
+            : t("garden_complete")}
         </p>
       )}
     </section>

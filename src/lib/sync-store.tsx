@@ -52,6 +52,21 @@ export type Assignment = {
   helperId?: string | undefined;
 };
 
+export type HomeworkStatus = "todo" | "doing" | "done";
+
+export type Homework = {
+  id: string;
+  userId: string;
+  subject: string;
+  title: string;
+  due: string;
+  minutes: number;
+  status: HomeworkStatus;
+  helpWanted?: boolean | undefined;
+};
+
+export const HOMEWORK_POINTS = 15;
+
 export type Reward = {
   id: string;
   title: string;
@@ -149,6 +164,12 @@ const seedAssignments: Assignment[] = [
   { id: "a4", choreId: "c-goats", userId: "u-amahle", status: "todo", day: "today" },
 ];
 
+const seedHomework: Homework[] = [
+  { id: "h1", userId: "u-amahle", subject: "Mathematics", title: "Algebra worksheet p.42", due: "Today", minutes: 45, status: "doing" },
+  { id: "h2", userId: "u-thabo", subject: "Natural Science", title: "Water cycle poster", due: "Tomorrow", minutes: 30, status: "todo" },
+  { id: "h3", userId: "u-lindiwe", subject: "Reading", title: "Read 2 pages aloud", due: "Today", minutes: 15, status: "todo" },
+];
+
 const seedRewards: Reward[] = [
   { id: "r1", title: "Extra 30 min screen time", cost: 100, emoji: "📱" },
   { id: "r2", title: "Choose Sunday dinner", cost: 150, emoji: "🍲" },
@@ -185,6 +206,10 @@ type Store = {
   acceptHelp: (assignmentId: string, helperId: string) => void;
   gardenItems: GardenItem[];
   grown: number;
+  homework: Homework[];
+  addHomework: (h: Omit<Homework, "id" | "status">) => void;
+  setHomeworkStatus: (id: string, status: HomeworkStatus) => void;
+  requestStudyHelp: (id: string) => void;
 };
 
 export type GardenItem = { emoji: string; label: string };
@@ -253,6 +278,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [chores, setChores] = useState<Chore[]>(RURAL_CHORES);
   const [assignments, setAssignments] = useState<Assignment[]>(seedAssignments);
   const [rewards, setRewards] = useState<Reward[]>(seedRewards);
+  const [homework, setHomework] = useState<Homework[]>(seedHomework);
   const [currentSiblingId, setCurrentSibling] = useState("u-thabo");
   const [onboarded, setOnboarded] = useState(false);
   const [offlineMode, setOfflineMode] = useState(true);
@@ -268,6 +294,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       chores,
       assignments,
       rewards,
+      homework,
       currentSiblingId,
       onboarded,
       offlineMode,
@@ -373,6 +400,23 @@ export function SyncProvider({ children }: { children: ReactNode }) {
           ),
         );
       },
+      addHomework: (h) =>
+        setHomework((prev) => [...prev, { ...h, id: `h-${Date.now()}`, status: "todo" }]),
+      setHomeworkStatus: (id, status) => {
+        const item = homework.find((h) => h.id === id);
+        if (item && status === "done" && item.status !== "done") {
+          setUsers((prev) =>
+            prev.map((u) =>
+              u.id === item.userId ? { ...u, points: u.points + HOMEWORK_POINTS } : u,
+            ),
+          );
+        }
+        setHomework((prev) => prev.map((h) => (h.id === id ? { ...h, status } : h)));
+      },
+      requestStudyHelp: (id) =>
+        setHomework((prev) =>
+          prev.map((h) => (h.id === id ? { ...h, helpWanted: true } : h)),
+        ),
       gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
       grown: assignments.filter((a) => a.status === "approved").length,
       redeem: (rewardId, userId) => {
@@ -389,7 +433,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         );
       },
     }),
-    [family, users, chores, assignments, rewards, currentSiblingId, onboarded, offlineMode, viewerRole],
+    [family, users, chores, assignments, rewards, homework, currentSiblingId, onboarded, offlineMode, viewerRole],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

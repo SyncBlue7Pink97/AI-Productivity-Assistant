@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSync, type LocationType } from "@/lib/sync-store";
+import { useI18n, LANGUAGES } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,6 +28,7 @@ type Kid = { name: string; age: number };
 function Onboarding() {
   const navigate = useNavigate();
   const { completeFamilySetup } = useSync();
+  const { t, lang, setLang } = useI18n();
   const [mode, setMode] = useState<"create" | "join">("create");
   const [familyName, setFamilyName] = useState("Mokoena Family");
   const [joinCode, setJoinCode] = useState("");
@@ -58,10 +60,23 @@ function Onboarding() {
         <div className="mx-auto flex size-16 items-center justify-center rounded-3xl bg-card/80 text-3xl">
           🔄
         </div>
-        <h1 className="mt-4 text-4xl font-extrabold text-primary-foreground">SiblingSync</h1>
-        <p className="mt-2 text-sm font-semibold text-primary-foreground/85">
-          Fair chores. No more arguments.
-        </p>
+        <h1 className="mt-4 text-4xl font-extrabold text-primary-foreground">{t("app_name")}</h1>
+        <p className="mt-2 text-sm font-semibold text-primary-foreground/85">{t("tagline")}</p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {LANGUAGES.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => setLang(l.code)}
+              className={`rounded-full px-3 py-1.5 text-xs font-bold ${
+                lang === l.code
+                  ? "bg-card text-on-primary-container"
+                  : "bg-card/50 text-on-primary-container/80"
+              }`}
+            >
+              {l.flag} {l.label}
+            </button>
+          ))}
+        </div>
       </header>
 
       <div className="space-y-4 px-4 pt-6 pb-12">
@@ -76,7 +91,7 @@ function Onboarding() {
                   : "text-muted-foreground"
               }`}
             >
-              {m === "create" ? "Create family" : "Join with code"}
+              {m === "create" ? t("create_family") : t("join_with_code")}
             </button>
           ))}
         </div>
@@ -84,7 +99,7 @@ function Onboarding() {
         <section className="card-soft space-y-3 p-5">
           {mode === "create" ? (
             <label className="block">
-              <span className="text-xs font-bold text-muted-foreground">Family name</span>
+              <span className="text-xs font-bold text-muted-foreground">{t("family_name")}</span>
               <input
                 value={familyName}
                 onChange={(e) => setFamilyName(e.target.value)}
@@ -93,7 +108,7 @@ function Onboarding() {
             </label>
           ) : (
             <label className="block">
-              <span className="text-xs font-bold text-muted-foreground">Family code</span>
+              <span className="text-xs font-bold text-muted-foreground">{t("family_code")}</span>
               <input
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value)}
@@ -105,12 +120,12 @@ function Onboarding() {
         </section>
 
         <section className="card-soft space-y-3 p-5">
-          <h2 className="text-lg font-extrabold">Where do you live?</h2>
+          <h2 className="text-lg font-extrabold">{t("where_do_you_live")}</h2>
           <div className="grid grid-cols-2 gap-3">
             {(
               [
-                { key: "urban", emoji: "🏙️", label: "Urban", note: "Indoor chores" },
-                { key: "rural", emoji: "🌾", label: "Rural", note: "Offline friendly" },
+                { key: "urban", emoji: "🏙️", label: t("urban"), note: t("indoor_chores") },
+                { key: "rural", emoji: "🌾", label: t("rural"), note: t("offline_friendly") },
               ] as const
             ).map((o) => (
               <button
@@ -130,20 +145,19 @@ function Onboarding() {
           </div>
           {locationType === "rural" && (
             <p className="rounded-2xl bg-secondary-container px-4 py-3 text-xs font-semibold text-on-secondary-container">
-              Rural pack added: fetch water, feed chickens, collect firewood, sweep yard, herd
-              goats. Offline Mode is on — tick a box instead of uploading photos.
+              {t("rural_pack_note")}
             </p>
           )}
         </section>
 
         <section className="card-soft space-y-3 p-5">
-          <h2 className="text-lg font-extrabold">Add siblings & ages</h2>
+          <h2 className="text-lg font-extrabold">{t("add_siblings_ages")}</h2>
           {kids.map((k, i) => (
             <div key={i} className="flex gap-2">
               <input
                 value={k.name}
                 onChange={(e) => update(i, { name: e.target.value })}
-                placeholder="Name"
+                placeholder={t("name")}
                 className="flex-1 rounded-2xl border border-input bg-surface-2 px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-ring"
               />
               <input
@@ -160,7 +174,7 @@ function Onboarding() {
             onClick={() => setKids((p) => [...p, { name: "", age: 10 }])}
             className="w-full rounded-2xl border-2 border-dashed border-border py-3 text-sm font-bold text-muted-foreground"
           >
-            + Add another sibling
+            {t("add_another_sibling")}
           </button>
         </section>
 
@@ -168,7 +182,7 @@ function Onboarding() {
           onClick={start}
           className="w-full rounded-3xl bg-primary py-4 text-base font-extrabold text-primary-foreground shadow-lift active:scale-[0.99]"
         >
-          Start syncing
+          {t("start_syncing")}
         </button>
       </div>
     </div>

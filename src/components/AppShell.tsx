@@ -1,15 +1,54 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
-import { Home, BarChart3, Trophy, Gift, Sprout } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Home, BarChart3, Trophy, Gift, Sprout, BookOpen } from "lucide-react";
 import { useSync } from "@/lib/sync-store";
+import { useI18n, LANGUAGES, type Dict } from "@/lib/i18n";
 
 const tabs = [
-  { to: "/sibling", label: "My Sync", Icon: Home },
-  { to: "/parent", label: "Parent", Icon: BarChart3 },
-  { to: "/garden", label: "Garden", Icon: Sprout },
-  { to: "/leaderboard", label: "Ranks", Icon: Trophy },
-  { to: "/rewards", label: "Rewards", Icon: Gift },
-] as const;
+  { to: "/sibling", key: "nav_my_sync", Icon: Home },
+  { to: "/parent", key: "nav_parent", Icon: BarChart3 },
+  { to: "/learn", key: "nav_learn", Icon: BookOpen },
+  { to: "/garden", key: "nav_garden", Icon: Sprout },
+  { to: "/leaderboard", key: "nav_ranks", Icon: Trophy },
+  { to: "/rewards", key: "nav_rewards", Icon: Gift },
+] as const satisfies readonly { to: string; key: keyof Dict; Icon: unknown }[];
+
+function LanguagePicker() {
+  const { lang, setLang, t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const current = LANGUAGES.find((l) => l.code === lang);
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-label={t("language")}
+        className="rounded-full bg-card/70 px-3 py-1 text-xs font-bold text-on-primary-container"
+      >
+        🌍 {current?.code.toUpperCase()}
+      </button>
+      {open && (
+        <ul className="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-2xl bg-card shadow-lift">
+          {LANGUAGES.map((l) => (
+            <li key={l.code}>
+              <button
+                onClick={() => {
+                  setLang(l.code);
+                  setOpen(false);
+                }}
+                className={`w-full px-4 py-2.5 text-left text-sm font-bold ${
+                  l.code === lang ? "bg-primary-container text-on-primary-container" : ""
+                }`}
+              >
+                {l.flag} {l.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function AppShell({
   title,
@@ -22,19 +61,19 @@ export function AppShell({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { family, offlineMode, viewerRole } = useSync();
+  const { t } = useI18n();
   const visibleTabs = tabs.filter((t) => t.to !== "/parent" || viewerRole === "parent");
-
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background">
       <header className="bg-sky-pink rounded-b-4xl px-5 pt-8 pb-7 shadow-soft">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <span className="rounded-full bg-card/70 px-3 py-1 text-xs font-bold text-on-primary-container">
             {family.name} · {family.code}
           </span>
           {family.locationType === "rural" && offlineMode && (
             <span className="rounded-full bg-card/70 px-3 py-1 text-xs font-bold text-on-secondary-container">
-              📴 Offline mode
+              📴 {t("offline_mode")}
             </span>
           )}
           {viewerRole !== "parent" && (
@@ -42,9 +81,10 @@ export function AppShell({
               to="/parent"
               className="rounded-full bg-card/70 px-3 py-1 text-xs font-bold text-on-primary-container"
             >
-              🔒 Parent
+              🔒 {t("parent_lock")}
             </Link>
           )}
+          <LanguagePicker />
         </div>
 
         <h1 className="mt-4 text-3xl font-extrabold text-primary-foreground">{title}</h1>
@@ -55,22 +95,22 @@ export function AppShell({
 
       <main className="flex-1 space-y-4 px-4 pt-5 pb-28">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-md border-t border-border bg-surface/95 px-2 py-2 backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-md border-t border-border bg-surface/95 px-1 py-2 backdrop-blur">
         <ul className="flex items-center justify-around">
-          {visibleTabs.map(({ to, label, Icon }) => {
+          {visibleTabs.map(({ to, key, Icon }) => {
             const active = pathname === to;
             return (
               <li key={to}>
                 <Link
                   to={to}
-                  className={`flex w-20 flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-bold transition-colors ${
+                  className={`flex w-16 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] font-bold transition-colors ${
                     active
                       ? "bg-primary-container text-on-primary-container"
                       : "text-muted-foreground"
                   }`}
                 >
                   <Icon className="size-5" />
-                  {label}
+                  {t(key)}
                 </Link>
               </li>
             );

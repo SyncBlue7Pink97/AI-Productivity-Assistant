@@ -47,6 +47,7 @@ export type Assignment = {
   userId: string;
   status: AssignmentStatus;
   photoUrl?: string | undefined;
+  voiceUrl?: string | undefined;
   day: string;
   checkIn?: CheckIn | undefined;
   helperId?: string | undefined;
@@ -195,7 +196,11 @@ type Store = {
   setCurrentSibling: (id: string) => void;
 
   completeFamilySetup: (f: Family, kids: { name: string; age: number }[]) => void;
-  submitProof: (assignmentId: string, photoUrl?: string) => void;
+  submitProof: (
+    assignmentId: string,
+    photoUrl?: string,
+    voiceUrl?: string,
+  ) => void;
   approve: (assignmentId: string) => void;
   reject: (assignmentId: string) => void;
   swap: (assignmentId: string, toUserId: string) => void;
@@ -336,10 +341,10 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         }
         setOnboarded(true);
       },
-      submitProof: (id, photoUrl) =>
+      submitProof: (id, photoUrl, voiceUrl) =>
         setAssignments((prev) =>
           prev.map((a) =>
-            a.id === id ? { ...a, status: "pending", photoUrl } : a,
+            a.id === id ? { ...a, status: "pending", photoUrl, voiceUrl } : a,
           ),
         ),
       approve: (id) => {
@@ -364,7 +369,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       reject: (id) =>
         setAssignments((prev) =>
           prev.map((x) =>
-            x.id === id ? { ...x, status: "todo", photoUrl: undefined } : x,
+            x.id === id
+              ? { ...x, status: "todo", photoUrl: undefined, voiceUrl: undefined }
+              : x,
           ),
         ),
       swap: (id, toUserId) =>

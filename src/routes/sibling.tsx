@@ -8,6 +8,7 @@ import {
   weightedPoints,
   filterChoresByAge,
 } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/sibling")({
   head: () => ({
@@ -42,6 +43,7 @@ function SiblingHome() {
     setCheckIn,
   } = useSync();
   const [swapFor, setSwapFor] = useState<string | null>(null);
+  const { t } = useI18n();
 
   const siblings = users.filter((u) => u.role === "sibling");
   const me = siblings.find((s) => s.id === currentSiblingId) ?? siblings[0];
@@ -57,7 +59,7 @@ function SiblingHome() {
   const left = mine.filter((a) => a.status !== "approved").length;
 
   return (
-    <AppShell title={`Hi ${me.name} 👋`} subtitle="My Sync Today">
+    <AppShell title={t("hi_name", { name: me.name })} subtitle={t("my_sync_today")}>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {siblings.map((s) => (
           <button
@@ -76,25 +78,25 @@ function SiblingHome() {
 
       <div className="card-soft flex items-center justify-between p-4">
         <div>
-          <p className="text-xs font-bold text-muted-foreground">My points</p>
+          <p className="text-xs font-bold text-muted-foreground">{t("my_points")}</p>
           <p className="text-2xl font-extrabold">{me.points}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs font-bold text-muted-foreground">Streak</p>
+          <p className="text-xs font-bold text-muted-foreground">{t("streak")}</p>
           <p className="text-2xl font-extrabold">🔥 {me.streak}</p>
         </div>
         <AgeBadge tone={badge.tone} label={badge.label} />
       </div>
 
       <section className="card-soft bg-primary-container p-5">
-        <h2 className="text-lg font-extrabold text-on-primary-container">Today's plan 🗓️</h2>
+        <h2 className="text-lg font-extrabold text-on-primary-container">{t("todays_plan")}</h2>
         <p className="mt-1 text-sm font-bold text-on-primary-container/80">
           {left > 0
-            ? `${left} chore${left > 1 ? "s" : ""} left · up to ${totalPoints} pts today`
-            : "All done for today — enjoy your day!"}
+            ? t("chores_left", { n: left, pts: totalPoints })
+            : t("all_done_today")}
         </p>
         <p className="mt-1 text-xs font-semibold text-on-primary-container/70">
-          Tap “I can do it” or “Need help” so everyone knows the plan — no arguments.
+          {t("checkin_hint")}
         </p>
       </section>
 
@@ -115,17 +117,17 @@ function SiblingHome() {
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <AgeBadge
                       tone={diff}
-                      label={`${diff} · ${chore.points} pts`}
+                      label={`${t(diff)} · ${t("pts_suffix", { n: chore.points })}`}
                     />
                     <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
-                      {chore.category} · min age {chore.minAge}
+                      {t(("cat_" + chore.category) as "cat_indoor")} · {t("min_age", { n: chore.minAge })}
                     </span>
                     <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
-                      age-weighted {weightedPoints(chore.points, me.age)} pts
+                      {t("age_weighted_pts", { n: weightedPoints(chore.points, me.age) })}
                     </span>
                     {chore.dueTime && (
                       <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
-                        ⏰ due {chore.dueTime}
+                        {t("due_at", { time: chore.dueTime })}
                       </span>
                     )}
                   </div>
@@ -142,7 +144,7 @@ function SiblingHome() {
                         : "bg-surface-2 text-muted-foreground"
                     }`}
                   >
-                    👍 I can do it
+                    {t("i_can_do_it")}
                   </button>
                   <button
                     onClick={() => setCheckIn(a.id, "need-help")}
@@ -152,14 +154,14 @@ function SiblingHome() {
                         : "bg-surface-2 text-muted-foreground"
                     }`}
                   >
-                    🙋 Need help
+                    {t("need_help")}
                   </button>
                 </div>
               )}
 
               {a.helperId && (
                 <p className="mt-2 rounded-2xl bg-secondary-container px-4 py-2.5 text-xs font-bold text-on-secondary-container">
-                  🤝 {users.find((u) => u.id === a.helperId)?.name} is helping with this one.
+                  {t("helper_helping", { name: users.find((u) => u.id === a.helperId)?.name ?? "" })}
                 </p>
               )}
 
@@ -170,31 +172,31 @@ function SiblingHome() {
                     onClick={() => submitProof(a.id, noPhoto ? undefined : "photo.jpg")}
                     className="flex-1 rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
                   >
-                    {noPhoto ? "✅ Mark done" : "📸 Upload proof"}
+                    {noPhoto ? t("mark_done") : t("upload_proof")}
                   </button>
                   <button
                     onClick={() => setSwapFor(swapFor === a.id ? null : a.id)}
                     className="rounded-2xl bg-secondary-container px-4 py-3 text-sm font-extrabold text-on-secondary-container"
                   >
-                    🔁 Swap
+                    {t("swap")}
                   </button>
                 </div>
               )}
               {a.status === "pending" && (
                 <p className="mt-3 rounded-2xl bg-warning/25 px-4 py-3 text-sm font-bold text-warning-foreground">
-                  ⏳ Waiting for parent approval
+                  {t("waiting_approval")}
                 </p>
               )}
               {a.status === "approved" && (
                 <p className="mt-3 rounded-2xl bg-success/25 px-4 py-3 text-sm font-bold text-success-foreground">
-                  🎉 Approved — points added!
+                  {t("approved_points")}
                 </p>
               )}
 
               {swapFor === a.id && (
                 <div className="mt-3 space-y-2 rounded-2xl bg-surface-2 p-3">
                   <p className="text-xs font-bold text-muted-foreground">
-                    Swap with a sibling old enough for this chore
+                    {t("swap_with_sibling")}
                   </p>
                   {siblings
                     .filter(
@@ -220,7 +222,7 @@ function SiblingHome() {
                       filterChoresByAge(chores, s.age).some((c) => c.id === chore.id),
                   ).length === 0 && (
                     <p className="text-sm font-semibold">
-                      No one else is old enough for this one.
+                      {t("nobody_old_enough")}
                     </p>
                   )}
                 </div>
@@ -231,7 +233,7 @@ function SiblingHome() {
       </ul>
 
       <p className="px-1 text-xs font-semibold text-muted-foreground">
-        {eligible.length} chores in the family pool match {me.name}'s age group.
+        {t("pool_match", { n: eligible.length, name: me.name })}
       </p>
     </AppShell>
   );

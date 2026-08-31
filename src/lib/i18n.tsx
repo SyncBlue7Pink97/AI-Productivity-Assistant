@@ -180,6 +180,18 @@ const en = {
   needs_help_study: "🙋 Ask for study help",
   study_help_note: "{name} asked for help with {subject}.",
   chores_after_homework: "Homework first, chores after — keeps school on track.",
+
+  // shout & done
+  shout_done: "Shout & Done",
+  shout_hold_hint: "Hold the pink button and shout what you did!",
+  shout_hold_button: "🎤 Hold & shout",
+  shout_recording: "🔴 Listening… {n}",
+  shout_example: 'Say it loud: "I done sweeped!"',
+  shout_saved: "🎉 Shouted & done! Sent to your parent.",
+  shout_mic_error: "We couldn't hear you — check microphone access.",
+  voice_proof: "Voice proof",
+  play_voice: "▶️ Play the shout",
+  voice_note_from: "Voice note from {name}",
 };
 
 export type Dict = typeof en;

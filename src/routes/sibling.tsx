@@ -9,6 +9,7 @@ import {
   filterChoresByAge,
 } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
+import { ShoutDone } from "@/components/ShoutDone";
 
 export const Route = createFileRoute("/sibling")({
   head: () => ({
@@ -165,6 +166,18 @@ function SiblingHome() {
                 </p>
               )}
 
+
+              {a.status === "todo" && (
+                <div className="mt-3 rounded-2xl bg-surface-2 p-3">
+                  <p className="text-xs font-extrabold">{t("shout_done")}</p>
+                  <p className="text-[11px] font-semibold text-muted-foreground">
+                    {t("shout_hold_hint")}
+                  </p>
+                  <ShoutDone
+                    onDone={(voiceUrl) => submitProof(a.id, undefined, voiceUrl)}
+                  />
+                </div>
+              )}
 
               {a.status === "todo" && (
                 <div className="mt-3 flex gap-2">

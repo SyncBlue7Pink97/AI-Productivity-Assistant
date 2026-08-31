@@ -95,6 +95,7 @@ function ParentDashboard() {
     family,
     acceptHelp,
     lockParent,
+    homework,
   } = useSync();
   const { t } = useI18n();
 
@@ -184,6 +185,38 @@ function ParentDashboard() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="card-soft p-5">
+        <h2 className="text-lg font-extrabold">{t("learn_summary")}</h2>
+        <p className="text-xs font-semibold text-muted-foreground">
+          {t("study_progress", {
+            done: homework.filter((h) => h.status === "done").length,
+            total: homework.length,
+          })}
+        </p>
+        <ul className="mt-3 space-y-2">
+          {siblings.map((s) => {
+            const mine = homework.filter((h) => h.userId === s.id);
+            const doneCount = mine.filter((h) => h.status === "done").length;
+            const help = mine.find((h) => h.helpWanted);
+            return (
+              <li key={s.id} className="rounded-2xl bg-surface-2 px-4 py-3">
+                <p className="text-sm font-extrabold">
+                  {s.emoji} {s.name} · {t("study_progress", { done: doneCount, total: mine.length })}
+                </p>
+                {help && (
+                  <p className="mt-1 text-[11px] font-bold text-warning-foreground">
+                    {t("study_help_note", { name: s.name, subject: help.subject })}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+        <p className="mt-3 text-[11px] font-semibold text-muted-foreground">
+          {t("chores_after_homework")}
+        </p>
       </section>
 
       <FamilyGarden compact />

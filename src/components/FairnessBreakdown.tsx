@@ -7,11 +7,13 @@ import {
   weightedPoints,
   allowedDifficulties,
 } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 /** Explains, per sibling, why they got today's chores (age rules + weighting + rotation). */
 export function FairnessBreakdown() {
   const { users, chores, assignments } = useSync();
   const [openId, setOpenId] = useState<string | null>(null);
+  const { t } = useI18n();
 
   const siblings = users.filter((u) => u.role === "sibling");
 
@@ -35,9 +37,9 @@ export function FairnessBreakdown() {
 
   return (
     <section className="card-soft p-5">
-      <h2 className="text-lg font-extrabold">Why these chores? 🤔</h2>
+      <h2 className="text-lg font-extrabold">{t("why_these_chores")}</h2>
       <p className="text-xs font-semibold text-muted-foreground">
-        Fairness breakdown — age limits, point weighting and hard-chore rotation
+        {t("fairness_sub")}
       </p>
 
       <div
@@ -47,9 +49,7 @@ export function FairnessBreakdown() {
             : "bg-warning/25 text-warning-foreground"
         }`}
       >
-        {spread <= 20
-          ? `✅ Balanced week — only ${spread} weighted points between the busiest and lightest sibling.`
-          : `⚖️ ${spread} weighted points apart — tap Auto-rotate to even things out.`}
+        {spread <= 20 ? t("balanced_week", { n: spread }) : t("unbalanced_week", { n: spread })}
       </div>
 
       <ul className="mt-4 space-y-3">
@@ -70,7 +70,7 @@ export function FairnessBreakdown() {
                     {s.name} · {s.age}
                   </span>
                   <span className="block text-[11px] font-bold text-muted-foreground">
-                    {raw} pts → {weighted} weighted ({multiplier})
+                    {t("weighted_line", { raw, weighted, multiplier })}
                   </span>
                 </span>
                 <AgeBadge tone={badge.tone} label={badge.label} />
@@ -82,8 +82,10 @@ export function FairnessBreakdown() {
               {open && (
                 <div className="mt-3 space-y-2">
                   <p className="text-xs font-semibold text-muted-foreground">
-                    Can be given: {allowed.join(", ")} chores only — anything with a
-                    higher minimum age is hidden from {s.name}.
+                    {t("can_be_given", {
+                      list: allowed.map((d) => t(d)).join(", "),
+                      name: s.name,
+                    })}
                   </p>
                   {mine.map(({ a, chore }) => {
                     if (!chore) return null;
@@ -96,21 +98,26 @@ export function FairnessBreakdown() {
                         </p>
                         <ul className="mt-1 space-y-0.5 text-[11px] font-semibold text-muted-foreground">
                           <li>
-                            • {diff} chore, min age {chore.minAge} — {s.name} is {s.age},
-                            so it is allowed.
+                            {t("rule_age", {
+                              diff: t(diff),
+                              minAge: chore.minAge,
+                              name: s.name,
+                              age: s.age,
+                            })}
                           </li>
                           <li>
-                            • {chore.points} pts × {multiplier} age weighting ={" "}
-                            {weightedPoints(chore.points, s.age)} pts, so younger
-                            siblings aren't left behind.
+                            {t("rule_weight", {
+                              points: chore.points,
+                              multiplier,
+                              weighted: weightedPoints(chore.points, s.age),
+                            })}
                           </li>
                           <li>
-                            •{" "}
                             {diff === "hard"
                               ? repeated
-                                ? "Flagged: had a hard chore last week — next rotation will move it."
-                                : "No hard chore last week, so rotation allows this one."
-                              : "Rotation keeps lighter chores moving between siblings each week."}
+                                ? t("rule_hard_repeat")
+                                : t("rule_hard_ok")
+                              : t("rule_light")}
                           </li>
                         </ul>
                       </div>
@@ -118,7 +125,7 @@ export function FairnessBreakdown() {
                   })}
                   {mine.length === 0 && (
                     <p className="text-sm font-semibold">
-                      No chores today — the rotation gave {s.name} a rest day.
+                      {t("rest_day", { name: s.name })}
                     </p>
                   )}
                 </div>

@@ -11,6 +11,7 @@ import {
   HELP_BONUS,
   type Category,
 } from "@/lib/sync-store";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/parent")({
   head: () => ({
@@ -33,16 +34,17 @@ export const Route = createFileRoute("/parent")({
 
 function ParentGate() {
   const { unlockParent } = useSync();
+  const { t } = useI18n();
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
 
   return (
-    <AppShell title="Parent Home" subtitle="Grown-ups only">
+    <AppShell title={t("parent_home")} subtitle={t("grown_ups_only")}>
       <section className="card-soft space-y-4 p-6 text-center">
         <p className="text-5xl">🔒</p>
-        <h2 className="text-lg font-extrabold">Enter parent PIN</h2>
+        <h2 className="text-lg font-extrabold">{t("enter_parent_pin")}</h2>
         <p className="text-xs font-semibold text-muted-foreground">
-          This area is for parents — approvals, fairness and new chores.
+          {t("parent_area_note")}
         </p>
         <input
           value={pin}
@@ -56,7 +58,7 @@ function ParentGate() {
           className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-2xl font-extrabold tracking-[0.6em] outline-none focus:ring-2 focus:ring-ring"
         />
         {error && (
-          <p className="text-xs font-bold text-destructive">That PIN isn't right. Try again.</p>
+          <p className="text-xs font-bold text-destructive">{t("wrong_pin")}</p>
         )}
         <button
           onClick={() => {
@@ -67,9 +69,9 @@ function ParentGate() {
           }}
           className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
         >
-          Unlock parent home
+          {t("unlock_parent_home")}
         </button>
-        <p className="text-[11px] font-semibold text-muted-foreground">Demo PIN: 1234</p>
+        <p className="text-[11px] font-semibold text-muted-foreground">{t("demo_pin")}</p>
       </section>
     </AppShell>
   );
@@ -94,6 +96,7 @@ function ParentDashboard() {
     acceptHelp,
     lockParent,
   } = useSync();
+  const { t } = useI18n();
 
   const siblings = users.filter((u) => u.role === "sibling");
   const pending = assignments.filter((a) => a.status === "pending");
@@ -134,18 +137,18 @@ function ParentDashboard() {
   const max = Math.max(...load.map((l) => l.total), 1);
 
   return (
-    <AppShell title="Parent Home" subtitle="Keeping the week fair">
+    <AppShell title={t("parent_home")} subtitle={t("keeping_week_fair")}>
       <section className="card-soft p-5">
-        <h2 className="text-lg font-extrabold">Today's family check-in</h2>
+        <h2 className="text-lg font-extrabold">{t("family_checkin")}</h2>
         <p className="text-xs font-semibold text-muted-foreground">
-          A quick summary — no need to inspect every task
+          {t("checkin_summary_note")}
         </p>
         <div className="mt-3 grid grid-cols-4 gap-2 text-center">
           {[
-            { label: "Can do", value: canDo.length, emoji: "👍" },
-            { label: "Need help", value: needHelp.length, emoji: "🙋" },
-            { label: "To approve", value: pending.length, emoji: "⏳" },
-            { label: "Done", value: done.length, emoji: "🎉" },
+            { label: t("can_do"), value: canDo.length, emoji: "👍" },
+            { label: t("need_help_short"), value: needHelp.length, emoji: "🙋" },
+            { label: t("to_approve"), value: pending.length, emoji: "⏳" },
+            { label: t("done"), value: done.length, emoji: "🎉" },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl bg-surface-2 px-1 py-3">
               <p className="text-lg">{s.emoji}</p>
@@ -157,21 +160,25 @@ function ParentDashboard() {
 
         {helpSuggestions.length === 0 ? (
           <p className="mt-3 rounded-2xl bg-surface-2 px-4 py-3 text-sm font-semibold text-muted-foreground">
-            Nobody has asked for help today.
+            {t("no_help_asked")}
           </p>
         ) : (
           <ul className="mt-3 space-y-2">
             {helpSuggestions.map(({ a, chore, helper, kid }) => (
               <li key={a.id} className="rounded-2xl bg-secondary-container p-4">
                 <p className="text-sm font-bold text-on-secondary-container">
-                  {kid.name} needs help with {chore.title.toLowerCase()}. {helper.name} has
-                  finished their chores and can assist for {HELP_BONUS} bonus points.
+                  {t("help_suggestion", {
+                    kid: kid.name,
+                    chore: chore.title.toLowerCase(),
+                    helper: helper.name,
+                    bonus: HELP_BONUS,
+                  })}
                 </p>
                 <button
                   onClick={() => acceptHelp(a.id, helper.id)}
                   className="mt-3 w-full rounded-2xl bg-primary py-2.5 text-sm font-extrabold text-primary-foreground"
                 >
-                  🤝 Ask {helper.name} to help
+                  {t("ask_to_help", { name: helper.name })}
                 </button>
               </li>
             ))}
@@ -182,9 +189,9 @@ function ParentDashboard() {
       <FamilyGarden compact />
 
       <section className="card-soft p-5">
-        <h2 className="text-lg font-extrabold">Weekly fairness</h2>
+        <h2 className="text-lg font-extrabold">{t("weekly_fairness")}</h2>
         <p className="text-xs font-semibold text-muted-foreground">
-          Age-weighted workload — bars should look even
+          {t("weekly_fairness_note")}
         </p>
         <div className="mt-4 flex h-40 items-end justify-around gap-3">
           {load.map((l, i) => (
@@ -207,7 +214,7 @@ function ParentDashboard() {
           onClick={rotate}
           className="mt-4 w-full rounded-2xl bg-secondary-container py-3 text-sm font-extrabold text-on-secondary-container"
         >
-          🔄 Auto-rotate next week (no repeat hard chores)
+          {t("auto_rotate")}
         </button>
       </section>
 
@@ -215,11 +222,11 @@ function ParentDashboard() {
 
       <section className="space-y-3">
         <h2 className="px-1 text-lg font-extrabold">
-          Pending approvals {pending.length > 0 && `(${pending.length})`}
+          {t("pending_approvals")} {pending.length > 0 && `(${pending.length})`}
         </h2>
         {pending.length === 0 && (
           <p className="card-soft p-5 text-sm font-semibold text-muted-foreground">
-            All caught up — nothing to approve.
+            {t("all_caught_up")}
           </p>
         )}
         {pending.map((a) => {
@@ -234,23 +241,23 @@ function ParentDashboard() {
                 <div className="flex-1">
                   <p className="font-extrabold">{chore.title}</p>
                   <p className="text-xs font-semibold text-muted-foreground">
-                    {kid.emoji} {kid.name} · {a.photoUrl ? "photo proof" : "offline tick"}
+                    {kid.emoji} {kid.name} · {a.photoUrl ? t("photo_proof") : t("offline_tick")}
                   </p>
                 </div>
-                <AgeBadge tone={difficultyOf(chore)} label={`${chore.points} pts`} />
+                <AgeBadge tone={difficultyOf(chore)} label={t("pts_suffix", { n: chore.points })} />
               </div>
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => approve(a.id)}
                   className="flex-1 rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
                 >
-                  Approve
+                  {t("approve")}
                 </button>
                 <button
                   onClick={() => reject(a.id)}
                   className="rounded-2xl bg-surface-2 px-5 py-3 text-sm font-extrabold text-muted-foreground"
                 >
-                  Redo
+                  {t("redo")}
                 </button>
               </div>
             </div>
@@ -263,14 +270,14 @@ function ParentDashboard() {
           onClick={() => setOpen((o) => !o)}
           className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
         >
-          {open ? "Close" : "➕ Add chore"}
+          {open ? t("close") : t("add_chore")}
         </button>
         {open && (
           <div className="mt-4 space-y-3">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Chore title"
+              placeholder={t("chore_title")}
               className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-ring"
             />
             <div className="grid grid-cols-3 gap-2">
@@ -284,7 +291,7 @@ function ParentDashboard() {
                       : "bg-surface-2 text-muted-foreground"
                   }`}
                 >
-                  {p} pts
+                  {t("pts_suffix", { n: p })}
                 </button>
               ))}
             </div>
@@ -299,7 +306,7 @@ function ParentDashboard() {
                       : "bg-surface-2 text-muted-foreground"
                   }`}
                 >
-                  {c}
+                  {t(("cat_" + c) as "cat_indoor")}
                 </button>
               ))}
             </div>
@@ -332,7 +339,7 @@ function ParentDashboard() {
               }}
               className="w-full rounded-2xl bg-secondary py-3 text-sm font-extrabold text-secondary-foreground"
             >
-              Save chore
+              {t("save_chore")}
             </button>
           </div>
         )}
@@ -342,7 +349,7 @@ function ParentDashboard() {
         onClick={lockParent}
         className="w-full rounded-2xl bg-surface-2 py-3 text-sm font-extrabold text-muted-foreground"
       >
-        🔒 Switch to kid view
+        {t("switch_kid_view")}
       </button>
     </AppShell>
 

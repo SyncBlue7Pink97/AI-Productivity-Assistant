@@ -274,11 +274,29 @@ function ParentDashboard() {
                 <div className="flex-1">
                   <p className="font-extrabold">{chore.title}</p>
                   <p className="text-xs font-semibold text-muted-foreground">
-                    {kid.emoji} {kid.name} · {a.photoUrl ? t("photo_proof") : t("offline_tick")}
+                    {kid.emoji} {kid.name} ·{" "}
+                    {a.voiceUrl
+                      ? t("voice_proof")
+                      : a.photoUrl
+                        ? t("photo_proof")
+                        : t("offline_tick")}
                   </p>
                 </div>
                 <AgeBadge tone={difficultyOf(chore)} label={t("pts_suffix", { n: chore.points })} />
               </div>
+              {a.voiceUrl && (
+                <div className="mt-3 rounded-2xl bg-secondary-container p-3">
+                  <p className="text-[11px] font-extrabold text-on-secondary-container">
+                    🎤 {t("voice_note_from", { name: kid.name })}
+                  </p>
+                  <audio
+                    controls
+                    src={a.voiceUrl}
+                    className="mt-2 w-full"
+                    aria-label={t("play_voice")}
+                  />
+                </div>
+              )}
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => approve(a.id)}

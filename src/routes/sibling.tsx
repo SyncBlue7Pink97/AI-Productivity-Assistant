@@ -77,18 +77,6 @@ function SiblingHome() {
         ))}
       </div>
 
-      <div className="card-soft flex items-center justify-between p-4">
-        <div>
-          <p className="text-xs font-bold text-muted-foreground">{t("my_points")}</p>
-          <p className="text-2xl font-extrabold">{me.points}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs font-bold text-muted-foreground">{t("streak")}</p>
-          <p className="text-2xl font-extrabold">🔥 {me.streak}</p>
-        </div>
-        <AgeBadge tone={badge.tone} label={badge.label} />
-      </div>
-
       <section className="card-soft bg-primary-container p-5">
         <h2 className="text-lg font-extrabold text-on-primary-container">{t("todays_plan")}</h2>
         <p className="mt-1 text-sm font-bold text-on-primary-container/80">
@@ -100,6 +88,16 @@ function SiblingHome() {
           {t("checkin_hint")}
         </p>
       </section>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-full bg-surface-2 px-3 py-1.5 text-[11px] font-bold text-muted-foreground">
+          {t("my_points")}: {me.points}
+        </span>
+        <span className="rounded-full bg-surface-2 px-3 py-1.5 text-[11px] font-bold text-muted-foreground">
+          {t("streak")}: 🔥 {me.streak}
+        </span>
+        <AgeBadge tone={badge.tone} label={badge.label} />
+      </div>
 
       <ul className="space-y-3">
 

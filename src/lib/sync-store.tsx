@@ -345,7 +345,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [onboarded, setOnboarded] = useState(false);
   const [offlineMode, setOfflineMode] = useState(true);
   const [viewerRole, setViewerRole] = useState<Role>("sibling");
-  const parentPin = "1234";
+  const [parentPin, setParentPin] = useState("1234");
+  const [hasCustomPassword, setHasCustomPassword] = useState(false);
+  const [plan, setPlan] = useState<Plan>("free");
 
 
 

@@ -364,6 +364,47 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       offlineMode,
       viewerRole,
       parentPin,
+      hasCustomPassword,
+      plan,
+      setPlan,
+      isPremium: plan === "premium",
+      gardenEnabled: family.locationType === "rural",
+      setParentPassword: (pw: string) => {
+        const clean = pw.trim();
+        if (clean.length < 4) return;
+        setParentPin(clean);
+        setHasCustomPassword(true);
+        setViewerRole("parent");
+      },
+      addChorePack: (packId: string) => {
+        const pack = CHORE_PACKS.find((p) => p.id === packId);
+        if (!pack) return;
+        const stamp = Date.now();
+        const newChores: Chore[] = pack.chores.map((c, i) => ({
+          ...c,
+          id: `${pack.id}-${stamp}-${i}`,
+        }));
+        setChores((prev) => [...prev, ...newChores]);
+        const kids = users.filter((u) => u.role === "sibling");
+        if (kids.length) {
+          setAssignments((prev) => [
+            ...prev,
+            ...newChores.flatMap((c, i) => {
+              const kid = kids.filter((k) => k.age >= c.minAge)[i % Math.max(kids.filter((k) => k.age >= c.minAge).length, 1)];
+              if (!kid) return [];
+              return [
+                {
+                  id: `a-${c.id}`,
+                  choreId: c.id,
+                  userId: kid.id,
+                  status: "todo" as const,
+                  day: "today",
+                },
+              ];
+            }),
+          ]);
+        }
+      },
       unlockParent: (pin: string) => {
         if (pin === parentPin) {
           setViewerRole("parent");

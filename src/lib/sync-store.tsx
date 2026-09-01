@@ -30,6 +30,8 @@ export type User = {
   emoji: string;
 };
 
+export type Recurrence = "once" | "daily" | "weekly";
+
 export type Chore = {
   id: string;
   title: string;
@@ -37,9 +39,57 @@ export type Chore = {
   minAge: number;
   category: Category;
   emoji: string;
+  recurrence?: Recurrence | undefined;
   dueTime?: string | undefined;
   hardLastWeekFor?: string[] | undefined;
 };
+
+export type Plan = "free" | "premium";
+
+export const PREMIUM_PRICE = "R79 / month";
+
+export type ChorePack = {
+  id: string;
+  title: string;
+  emoji: string;
+  chores: Omit<Chore, "id">[];
+};
+
+export const CHORE_PACKS: ChorePack[] = [
+  {
+    id: "pack-bedroom",
+    title: "Bedroom pack",
+    emoji: "🛏️",
+    chores: [
+      { title: "Make the bed", points: 10, minAge: 5, category: "indoor", emoji: "🛏️", recurrence: "daily", dueTime: "07:30" },
+      { title: "Tidy toys & clothes", points: 10, minAge: 5, category: "indoor", emoji: "🧸", recurrence: "daily", dueTime: "17:00" },
+      { title: "Change bed sheets", points: 20, minAge: 9, category: "indoor", emoji: "🧺", recurrence: "weekly", dueTime: "10:00" },
+      { title: "Vacuum bedroom", points: 30, minAge: 13, category: "indoor", emoji: "🧽", recurrence: "weekly", dueTime: "11:00" },
+    ],
+  },
+  {
+    id: "pack-kitchen",
+    title: "Kitchen pack",
+    emoji: "🍽️",
+    chores: [
+      { title: "Wipe the counters", points: 10, minAge: 5, category: "indoor", emoji: "🧼", recurrence: "daily", dueTime: "18:00" },
+      { title: "Wash the dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️", recurrence: "daily", dueTime: "18:30" },
+      { title: "Pack away groceries", points: 20, minAge: 9, category: "indoor", emoji: "🛒", recurrence: "weekly", dueTime: "17:30" },
+      { title: "Take out the bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️", recurrence: "weekly", dueTime: "19:00" },
+    ],
+  },
+  {
+    id: "pack-school",
+    title: "School prep pack",
+    emoji: "🎒",
+    chores: [
+      { title: "Pack the school bag", points: 10, minAge: 5, category: "indoor", emoji: "🎒", recurrence: "daily", dueTime: "19:30" },
+      { title: "Lay out the uniform", points: 10, minAge: 5, category: "indoor", emoji: "👕", recurrence: "daily", dueTime: "19:45" },
+      { title: "Make the lunchbox", points: 20, minAge: 9, category: "indoor", emoji: "🥪", recurrence: "daily", dueTime: "06:45" },
+      { title: "Check homework diary", points: 20, minAge: 9, category: "indoor", emoji: "📒", recurrence: "daily", dueTime: "20:00" },
+    ],
+  },
+];
 
 export type Assignment = {
   id: string;

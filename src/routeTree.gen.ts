@@ -14,6 +14,7 @@ import { Route as GardenRouteImport } from './routes/garden'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as ParentRouteImport } from './routes/parent'
+import { Route as PlansRouteImport } from './routes/plans'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SiblingRouteImport } from './routes/sibling'
 
@@ -42,6 +43,11 @@ const ParentRoute = ParentRouteImport.update({
   path: '/parent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlansRoute = PlansRouteImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RewardsRoute = RewardsRouteImport.update({
   id: '/rewards',
   path: '/rewards',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRoute
   '/parent': typeof ParentRoute
+  '/plans': typeof PlansRoute
   '/rewards': typeof RewardsRoute
   '/sibling': typeof SiblingRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRoute
   '/parent': typeof ParentRoute
+  '/plans': typeof PlansRoute
   '/rewards': typeof RewardsRoute
   '/sibling': typeof SiblingRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/learn': typeof LearnRoute
   '/parent': typeof ParentRoute
+  '/plans': typeof PlansRoute
   '/rewards': typeof RewardsRoute
   '/sibling': typeof SiblingRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/learn'
     | '/parent'
+    | '/plans'
     | '/rewards'
     | '/sibling'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/learn'
     | '/parent'
+    | '/plans'
     | '/rewards'
     | '/sibling'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/learn'
     | '/parent'
+    | '/plans'
     | '/rewards'
     | '/sibling'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   LearnRoute: typeof LearnRoute
   ParentRoute: typeof ParentRoute
+  PlansRoute: typeof PlansRoute
   RewardsRoute: typeof RewardsRoute
   SiblingRoute: typeof SiblingRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plans': {
+      id: '/plans'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof PlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rewards': {
       id: '/rewards'
       path: '/rewards'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   LearnRoute: LearnRoute,
   ParentRoute: ParentRoute,
+  PlansRoute: PlansRoute,
   RewardsRoute: RewardsRoute,
   SiblingRoute: SiblingRoute,
 }

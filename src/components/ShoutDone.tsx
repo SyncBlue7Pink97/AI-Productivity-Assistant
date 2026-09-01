@@ -80,9 +80,11 @@ export function ShoutDone({
       >
         {recording ? t("shout_recording", { n: count }) : t("shout_hold_button")}
       </button>
-      <p className="text-center text-[11px] font-bold text-muted-foreground">
-        {error ? t("shout_mic_error") : t("shout_example")}
-      </p>
+      {error && (
+        <p className="text-center text-[11px] font-bold text-muted-foreground">
+          {t("shout_mic_error")}
+        </p>
+      )}
     </div>
   );
 }

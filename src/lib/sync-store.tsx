@@ -30,6 +30,8 @@ export type User = {
   emoji: string;
 };
 
+export type Recurrence = "once" | "daily" | "weekly";
+
 export type Chore = {
   id: string;
   title: string;
@@ -37,9 +39,57 @@ export type Chore = {
   minAge: number;
   category: Category;
   emoji: string;
+  recurrence?: Recurrence | undefined;
   dueTime?: string | undefined;
   hardLastWeekFor?: string[] | undefined;
 };
+
+export type Plan = "free" | "premium";
+
+export const PREMIUM_PRICE = "R79 / month";
+
+export type ChorePack = {
+  id: string;
+  title: string;
+  emoji: string;
+  chores: Omit<Chore, "id">[];
+};
+
+export const CHORE_PACKS: ChorePack[] = [
+  {
+    id: "pack-bedroom",
+    title: "Bedroom pack",
+    emoji: "🛏️",
+    chores: [
+      { title: "Make the bed", points: 10, minAge: 5, category: "indoor", emoji: "🛏️", recurrence: "daily", dueTime: "07:30" },
+      { title: "Tidy toys & clothes", points: 10, minAge: 5, category: "indoor", emoji: "🧸", recurrence: "daily", dueTime: "17:00" },
+      { title: "Change bed sheets", points: 20, minAge: 9, category: "indoor", emoji: "🧺", recurrence: "weekly", dueTime: "10:00" },
+      { title: "Vacuum bedroom", points: 30, minAge: 13, category: "indoor", emoji: "🧽", recurrence: "weekly", dueTime: "11:00" },
+    ],
+  },
+  {
+    id: "pack-kitchen",
+    title: "Kitchen pack",
+    emoji: "🍽️",
+    chores: [
+      { title: "Wipe the counters", points: 10, minAge: 5, category: "indoor", emoji: "🧼", recurrence: "daily", dueTime: "18:00" },
+      { title: "Wash the dishes", points: 20, minAge: 9, category: "indoor", emoji: "🍽️", recurrence: "daily", dueTime: "18:30" },
+      { title: "Pack away groceries", points: 20, minAge: 9, category: "indoor", emoji: "🛒", recurrence: "weekly", dueTime: "17:30" },
+      { title: "Take out the bins", points: 20, minAge: 9, category: "outdoor", emoji: "🗑️", recurrence: "weekly", dueTime: "19:00" },
+    ],
+  },
+  {
+    id: "pack-school",
+    title: "School prep pack",
+    emoji: "🎒",
+    chores: [
+      { title: "Pack the school bag", points: 10, minAge: 5, category: "indoor", emoji: "🎒", recurrence: "daily", dueTime: "19:30" },
+      { title: "Lay out the uniform", points: 10, minAge: 5, category: "indoor", emoji: "👕", recurrence: "daily", dueTime: "19:45" },
+      { title: "Make the lunchbox", points: 20, minAge: 9, category: "indoor", emoji: "🥪", recurrence: "daily", dueTime: "06:45" },
+      { title: "Check homework diary", points: 20, minAge: 9, category: "indoor", emoji: "📒", recurrence: "daily", dueTime: "20:00" },
+    ],
+  },
+];
 
 export type Assignment = {
   id: string;
@@ -190,6 +240,13 @@ type Store = {
   offlineMode: boolean;
   viewerRole: Role;
   parentPin: string;
+  hasCustomPassword: boolean;
+  setParentPassword: (pw: string) => void;
+  plan: Plan;
+  setPlan: (p: Plan) => void;
+  isPremium: boolean;
+  addChorePack: (packId: string) => void;
+  gardenEnabled: boolean;
   unlockParent: (pin: string) => boolean;
   lockParent: () => void;
   setOfflineMode: (v: boolean) => void;
@@ -288,7 +345,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [onboarded, setOnboarded] = useState(false);
   const [offlineMode, setOfflineMode] = useState(true);
   const [viewerRole, setViewerRole] = useState<Role>("sibling");
-  const parentPin = "1234";
+  const [parentPin, setParentPin] = useState("1234");
+  const [hasCustomPassword, setHasCustomPassword] = useState(false);
+  const [plan, setPlan] = useState<Plan>("free");
 
 
 
@@ -305,6 +364,47 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       offlineMode,
       viewerRole,
       parentPin,
+      hasCustomPassword,
+      plan,
+      setPlan,
+      isPremium: plan === "premium",
+      gardenEnabled: family.locationType === "rural",
+      setParentPassword: (pw: string) => {
+        const clean = pw.trim();
+        if (clean.length < 4) return;
+        setParentPin(clean);
+        setHasCustomPassword(true);
+        setViewerRole("parent");
+      },
+      addChorePack: (packId: string) => {
+        const pack = CHORE_PACKS.find((p) => p.id === packId);
+        if (!pack) return;
+        const stamp = Date.now();
+        const newChores: Chore[] = pack.chores.map((c, i) => ({
+          ...c,
+          id: `${pack.id}-${stamp}-${i}`,
+        }));
+        setChores((prev) => [...prev, ...newChores]);
+        const kids = users.filter((u) => u.role === "sibling");
+        if (kids.length) {
+          setAssignments((prev) => [
+            ...prev,
+            ...newChores.flatMap((c, i) => {
+              const kid = kids.filter((k) => k.age >= c.minAge)[i % Math.max(kids.filter((k) => k.age >= c.minAge).length, 1)];
+              if (!kid) return [];
+              return [
+                {
+                  id: `a-${c.id}`,
+                  choreId: c.id,
+                  userId: kid.id,
+                  status: "todo" as const,
+                  day: "today",
+                },
+              ];
+            }),
+          ]);
+        }
+      },
       unlockParent: (pin: string) => {
         if (pin === parentPin) {
           setViewerRole("parent");
@@ -440,7 +540,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         );
       },
     }),
-    [family, users, chores, assignments, rewards, homework, currentSiblingId, onboarded, offlineMode, viewerRole],
+    [family, users, chores, assignments, rewards, homework, currentSiblingId, onboarded, offlineMode, viewerRole, parentPin, hasCustomPassword, plan],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

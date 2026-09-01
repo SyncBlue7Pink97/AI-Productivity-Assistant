@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Home, BarChart3, Trophy, Gift, Sprout, BookOpen } from "lucide-react";
+import { Home, BarChart3, Trophy, Gift, Sprout, BookOpen, Sparkles } from "lucide-react";
 import { useSync } from "@/lib/sync-store";
 import { useI18n, LANGUAGES, type Dict } from "@/lib/i18n";
 
@@ -11,6 +11,7 @@ const tabs = [
   { to: "/garden", key: "nav_garden", Icon: Sprout },
   { to: "/leaderboard", key: "nav_ranks", Icon: Trophy },
   { to: "/rewards", key: "nav_rewards", Icon: Gift },
+  { to: "/plans", key: "nav_plans", Icon: Sparkles },
 ] as const satisfies readonly { to: string; key: keyof Dict; Icon: unknown }[];
 
 function LanguagePicker() {
@@ -60,9 +61,11 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { family, offlineMode, viewerRole } = useSync();
+  const { family, offlineMode, viewerRole, gardenEnabled } = useSync();
   const { t } = useI18n();
-  const visibleTabs = tabs.filter((t) => t.to !== "/parent" || viewerRole === "parent");
+  const visibleTabs = tabs
+    .filter((tab) => tab.to !== "/parent" || viewerRole === "parent")
+    .filter((tab) => tab.to !== "/garden" || gardenEnabled);
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background">
@@ -103,7 +106,7 @@ export function AppShell({
               <li key={to}>
                 <Link
                   to={to}
-                  className={`flex w-16 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] font-bold transition-colors ${
+                  className={`flex w-13 flex-col items-center gap-1 rounded-2xl px-1 py-2 text-[10px] font-bold transition-colors ${
                     active
                       ? "bg-primary-container text-on-primary-container"
                       : "text-muted-foreground"

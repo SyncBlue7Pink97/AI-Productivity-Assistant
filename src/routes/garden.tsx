@@ -24,9 +24,19 @@ export const Route = createFileRoute("/garden")({
 });
 
 function GardenPage() {
-  const { users, assignments, chores } = useSync();
+  const { users, assignments, chores, gardenEnabled } = useSync();
   const { t } = useI18n();
   const siblings = users.filter((u) => u.role === "sibling");
+
+  if (!gardenEnabled) {
+    return (
+      <AppShell title={t("our_garden")} subtitle={t("grown_by_family")}>
+        <p className="card-soft p-5 text-sm font-semibold text-muted-foreground">
+          🏙️ {t("indoor_chores")}
+        </p>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title={t("our_garden")} subtitle={t("grown_by_family")}>

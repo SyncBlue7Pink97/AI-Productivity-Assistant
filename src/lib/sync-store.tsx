@@ -240,6 +240,13 @@ type Store = {
   offlineMode: boolean;
   viewerRole: Role;
   parentPin: string;
+  hasCustomPassword: boolean;
+  setParentPassword: (pw: string) => void;
+  plan: Plan;
+  setPlan: (p: Plan) => void;
+  isPremium: boolean;
+  addChorePack: (packId: string) => void;
+  gardenEnabled: boolean;
   unlockParent: (pin: string) => boolean;
   lockParent: () => void;
   setOfflineMode: (v: boolean) => void;

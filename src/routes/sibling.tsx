@@ -170,9 +170,6 @@ function SiblingHome() {
               {a.status === "todo" && (
                 <div className="mt-3 rounded-2xl bg-surface-2 p-3">
                   <p className="text-xs font-extrabold">{t("shout_done")}</p>
-                  <p className="text-[11px] font-semibold text-muted-foreground">
-                    {t("shout_hold_hint")}
-                  </p>
                   <ShoutDone
                     onDone={(voiceUrl) => submitProof(a.id, undefined, voiceUrl)}
                   />

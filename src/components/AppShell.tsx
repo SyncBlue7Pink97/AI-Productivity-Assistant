@@ -11,6 +11,7 @@ const tabs = [
   { to: "/garden", key: "nav_garden", Icon: Sprout },
   { to: "/leaderboard", key: "nav_ranks", Icon: Trophy },
   { to: "/rewards", key: "nav_rewards", Icon: Gift },
+  { to: "/plans", key: "nav_plans", Icon: Sparkles },
 ] as const satisfies readonly { to: string; key: keyof Dict; Icon: unknown }[];
 
 function LanguagePicker() {

@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Home, BarChart3, Trophy, Gift, Sprout, BookOpen } from "lucide-react";
+import { Home, BarChart3, Trophy, Gift, Sprout, BookOpen, Sparkles } from "lucide-react";
 import { useSync } from "@/lib/sync-store";
 import { useI18n, LANGUAGES, type Dict } from "@/lib/i18n";
 

@@ -32,33 +32,95 @@ export const Route = createFileRoute("/parent")({
   component: ParentHome,
 });
 
+function CreatePassword({ onDone }: { onDone: () => void }) {
+  const { setParentPassword } = useSync();
+  const { t } = useI18n();
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const inputClass =
+    "w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-ring";
+
+  return (
+    <AppShell title={t("parent_home")} subtitle={t("grown_ups_only")}>
+      <section className="card-soft space-y-3 p-6">
+        <p className="text-center text-5xl">🔑</p>
+        <h2 className="text-center text-lg font-extrabold">{t("set_parent_password")}</h2>
+        <p className="text-center text-xs font-semibold text-muted-foreground">
+          {t("parent_password_note")}
+        </p>
+        <input
+          value={pw}
+          onChange={(e) => {
+            setPw(e.target.value);
+            setError(null);
+          }}
+          type="password"
+          placeholder={t("new_password")}
+          className={inputClass}
+        />
+        <input
+          value={pw2}
+          onChange={(e) => {
+            setPw2(e.target.value);
+            setError(null);
+          }}
+          type="password"
+          placeholder={t("confirm_password")}
+          className={inputClass}
+        />
+        {error && <p className="text-xs font-bold text-destructive">{error}</p>}
+        <button
+          onClick={() => {
+            if (pw.trim().length < 4) return setError(t("password_too_short"));
+            if (pw !== pw2) return setError(t("passwords_dont_match"));
+            setParentPassword(pw);
+          }}
+          className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+        >
+          {t("save_password")}
+        </button>
+        <button
+          onClick={onDone}
+          className="w-full text-xs font-bold text-muted-foreground"
+        >
+          {t("back_to_login")}
+        </button>
+      </section>
+    </AppShell>
+  );
+}
+
 function ParentGate() {
-  const { unlockParent } = useSync();
+  const { unlockParent, hasCustomPassword } = useSync();
   const { t } = useI18n();
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
+  const [creating, setCreating] = useState(!hasCustomPassword);
+
+  if (creating) return <CreatePassword onDone={() => setCreating(false)} />;
 
   return (
     <AppShell title={t("parent_home")} subtitle={t("grown_ups_only")}>
       <section className="card-soft space-y-4 p-6 text-center">
         <p className="text-5xl">🔒</p>
-        <h2 className="text-lg font-extrabold">{t("enter_parent_pin")}</h2>
+        <h2 className="text-lg font-extrabold">{t("enter_parent_password")}</h2>
         <p className="text-xs font-semibold text-muted-foreground">
           {t("parent_area_note")}
         </p>
         <input
           value={pin}
           onChange={(e) => {
-            setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+            setPin(e.target.value);
             setError(false);
           }}
-          inputMode="numeric"
           type="password"
           placeholder="••••"
-          className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-2xl font-extrabold tracking-[0.6em] outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-2xl font-extrabold tracking-[0.4em] outline-none focus:ring-2 focus:ring-ring"
         />
         {error && (
-          <p className="text-xs font-bold text-destructive">{t("wrong_pin")}</p>
+          <p className="text-xs font-bold text-destructive">{t("wrong_password")}</p>
         )}
         <button
           onClick={() => {
@@ -71,11 +133,20 @@ function ParentGate() {
         >
           {t("unlock_parent_home")}
         </button>
-        <p className="text-[11px] font-semibold text-muted-foreground">{t("demo_pin")}</p>
+        <button
+          onClick={() => setCreating(true)}
+          className="w-full text-xs font-bold text-muted-foreground"
+        >
+          {t("create_password_instead")}
+        </button>
+        {!hasCustomPassword && (
+          <p className="text-[11px] font-semibold text-muted-foreground">{t("demo_pin")}</p>
+        )}
       </section>
     </AppShell>
   );
 }
+
 
 function ParentHome() {
   const { viewerRole } = useSync();

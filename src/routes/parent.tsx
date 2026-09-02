@@ -393,6 +393,43 @@ function ParentDashboard() {
       </section>
 
       <section className="card-soft p-5">
+        <h2 className="text-lg font-extrabold">{t("chore_packs")}</h2>
+        <p className="text-xs font-semibold text-muted-foreground">{t("chore_packs_note")}</p>
+        <ul className="mt-3 space-y-2">
+          {CHORE_PACKS.map((pack) => (
+            <li key={pack.id} className="rounded-2xl bg-surface-2 p-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{pack.emoji}</span>
+                <div className="flex-1">
+                  <p className="text-sm font-extrabold">
+                    {t(("pack_" + pack.id) as "pack_bedroom")}
+                  </p>
+                  <p className="text-[11px] font-bold text-muted-foreground">
+                    {t("chores_in_pack", { n: pack.chores.length })}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    addChorePack(pack.id);
+                    setAddedPack(pack.id);
+                  }}
+                  className="rounded-2xl bg-primary px-4 py-2.5 text-xs font-extrabold text-primary-foreground"
+                >
+                  {t("add_pack", { pack: t(("pack_" + pack.id) as "pack_bedroom") })}
+                </button>
+              </div>
+              {addedPack === pack.id && (
+                <p className="mt-2 text-[11px] font-bold text-success-foreground">
+                  {t("pack_added")}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="card-soft p-5">
+
         <button
           onClick={() => setOpen((o) => !o)}
           className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"

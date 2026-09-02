@@ -167,6 +167,8 @@ function ParentDashboard() {
     acceptHelp,
     lockParent,
     homework,
+    addChorePack,
+    isPremium,
   } = useSync();
   const { t } = useI18n();
 
@@ -192,10 +194,13 @@ function ParentDashboard() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [points, setPoints] = useState<10 | 20 | 30>(20);
+  const [recurrence, setRecurrence] = useState<Recurrence>("once");
+  const [addedPack, setAddedPack] = useState<string | null>(null);
   const [category, setCategory] = useState<Category>(
     family.locationType === "rural" ? "rural" : "indoor",
   );
   const [assignee, setAssignee] = useState(siblings[0]?.id ?? "");
+
 
   const load = siblings.map((s) => {
     const total = assignments

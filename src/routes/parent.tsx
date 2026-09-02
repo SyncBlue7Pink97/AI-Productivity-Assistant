@@ -540,10 +540,6 @@ function ParentDashboard() {
                 setRecurrence("once");
                 setOpen(false);
               }}
-
-                setTitle("");
-                setOpen(false);
-              }}
               className="w-full rounded-2xl bg-secondary py-3 text-sm font-extrabold text-secondary-foreground"
             >
               {t("save_chore")}

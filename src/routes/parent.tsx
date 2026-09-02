@@ -552,12 +552,15 @@ function ParentDashboard() {
         )}
       </section>
 
+      <ChangePassword />
+
       <button
         onClick={lockParent}
         className="w-full rounded-2xl bg-surface-2 py-3 text-sm font-extrabold text-muted-foreground"
       >
         {t("switch_kid_view")}
       </button>
+
     </AppShell>
 
   );

@@ -437,6 +437,38 @@ function ParentDashboard() {
                 </button>
               ))}
             </div>
+            <div>
+              <p className="mb-2 px-1 text-xs font-extrabold text-muted-foreground">
+                {t("recurrence")}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {(["once", "daily", "weekly"] as const).map((r) => {
+                  const locked = r !== "once" && !isPremium;
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => !locked && setRecurrence(r)}
+                      className={`rounded-2xl py-2.5 text-xs font-extrabold ${
+                        recurrence === r
+                          ? "bg-secondary text-secondary-foreground"
+                          : "bg-surface-2 text-muted-foreground"
+                      } ${locked ? "opacity-50" : ""}`}
+                    >
+                      {locked ? "🔒 " : ""}
+                      {t(("rec_" + r) as "rec_once")}
+                    </button>
+                  );
+                })}
+              </div>
+              {!isPremium && (
+                <Link
+                  to="/plans"
+                  className="mt-2 block text-[11px] font-bold text-muted-foreground underline"
+                >
+                  {t("premium_locked_note", { feature: t("feature_recurring") })} {t("see_plans")}
+                </Link>
+              )}
+            </div>
             <select
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
@@ -458,9 +490,15 @@ function ParentDashboard() {
                     minAge: points === 10 ? 5 : points === 20 ? 9 : 13,
                     category,
                     emoji: points === 30 ? "💪" : points === 20 ? "🧹" : "🌟",
+                    recurrence,
                   },
                   assignee,
                 );
+                setTitle("");
+                setRecurrence("once");
+                setOpen(false);
+              }}
+
                 setTitle("");
                 setOpen(false);
               }}

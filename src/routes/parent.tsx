@@ -565,3 +565,68 @@ function ParentDashboard() {
 
   );
 }
+
+function ChangePassword() {
+  const { setParentPassword } = useSync();
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const inputClass =
+    "w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-ring";
+
+  return (
+    <section className="card-soft p-5">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full rounded-2xl bg-surface-2 py-3 text-sm font-extrabold text-muted-foreground"
+      >
+        {t("change_password")}
+      </button>
+      {open && (
+        <div className="mt-4 space-y-3">
+          <input
+            value={pw}
+            onChange={(e) => {
+              setPw(e.target.value);
+              setError(null);
+              setSaved(false);
+            }}
+            type="password"
+            placeholder={t("new_password")}
+            className={inputClass}
+          />
+          <input
+            value={pw2}
+            onChange={(e) => {
+              setPw2(e.target.value);
+              setError(null);
+              setSaved(false);
+            }}
+            type="password"
+            placeholder={t("confirm_password")}
+            className={inputClass}
+          />
+          {error && <p className="text-xs font-bold text-destructive">{error}</p>}
+          {saved && <p className="text-xs font-bold text-success-foreground">{t("password_saved")}</p>}
+          <button
+            onClick={() => {
+              if (pw.trim().length < 4) return setError(t("password_too_short"));
+              if (pw !== pw2) return setError(t("passwords_dont_match"));
+              setParentPassword(pw);
+              setPw("");
+              setPw2("");
+              setSaved(true);
+            }}
+            className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+          >
+            {t("save_password")}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}

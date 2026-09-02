@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { FairnessBreakdown } from "@/components/FairnessBreakdown";
@@ -9,9 +9,12 @@ import {
   weightedPoints,
   suggestHelper,
   HELP_BONUS,
+  CHORE_PACKS,
   type Category,
+  type Recurrence,
 } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
+
 
 export const Route = createFileRoute("/parent")({
   head: () => ({
@@ -32,33 +35,95 @@ export const Route = createFileRoute("/parent")({
   component: ParentHome,
 });
 
+function CreatePassword({ onDone }: { onDone: () => void }) {
+  const { setParentPassword } = useSync();
+  const { t } = useI18n();
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const inputClass =
+    "w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-ring";
+
+  return (
+    <AppShell title={t("parent_home")} subtitle={t("grown_ups_only")}>
+      <section className="card-soft space-y-3 p-6">
+        <p className="text-center text-5xl">🔑</p>
+        <h2 className="text-center text-lg font-extrabold">{t("set_parent_password")}</h2>
+        <p className="text-center text-xs font-semibold text-muted-foreground">
+          {t("parent_password_note")}
+        </p>
+        <input
+          value={pw}
+          onChange={(e) => {
+            setPw(e.target.value);
+            setError(null);
+          }}
+          type="password"
+          placeholder={t("new_password")}
+          className={inputClass}
+        />
+        <input
+          value={pw2}
+          onChange={(e) => {
+            setPw2(e.target.value);
+            setError(null);
+          }}
+          type="password"
+          placeholder={t("confirm_password")}
+          className={inputClass}
+        />
+        {error && <p className="text-xs font-bold text-destructive">{error}</p>}
+        <button
+          onClick={() => {
+            if (pw.trim().length < 4) return setError(t("password_too_short"));
+            if (pw !== pw2) return setError(t("passwords_dont_match"));
+            setParentPassword(pw);
+          }}
+          className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+        >
+          {t("save_password")}
+        </button>
+        <button
+          onClick={onDone}
+          className="w-full text-xs font-bold text-muted-foreground"
+        >
+          {t("back_to_login")}
+        </button>
+      </section>
+    </AppShell>
+  );
+}
+
 function ParentGate() {
-  const { unlockParent } = useSync();
+  const { unlockParent, hasCustomPassword } = useSync();
   const { t } = useI18n();
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
+  const [creating, setCreating] = useState(!hasCustomPassword);
+
+  if (creating) return <CreatePassword onDone={() => setCreating(false)} />;
 
   return (
     <AppShell title={t("parent_home")} subtitle={t("grown_ups_only")}>
       <section className="card-soft space-y-4 p-6 text-center">
         <p className="text-5xl">🔒</p>
-        <h2 className="text-lg font-extrabold">{t("enter_parent_pin")}</h2>
+        <h2 className="text-lg font-extrabold">{t("enter_parent_password")}</h2>
         <p className="text-xs font-semibold text-muted-foreground">
           {t("parent_area_note")}
         </p>
         <input
           value={pin}
           onChange={(e) => {
-            setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+            setPin(e.target.value);
             setError(false);
           }}
-          inputMode="numeric"
           type="password"
           placeholder="••••"
-          className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-2xl font-extrabold tracking-[0.6em] outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-2xl font-extrabold tracking-[0.4em] outline-none focus:ring-2 focus:ring-ring"
         />
         {error && (
-          <p className="text-xs font-bold text-destructive">{t("wrong_pin")}</p>
+          <p className="text-xs font-bold text-destructive">{t("wrong_password")}</p>
         )}
         <button
           onClick={() => {
@@ -71,11 +136,20 @@ function ParentGate() {
         >
           {t("unlock_parent_home")}
         </button>
-        <p className="text-[11px] font-semibold text-muted-foreground">{t("demo_pin")}</p>
+        <button
+          onClick={() => setCreating(true)}
+          className="w-full text-xs font-bold text-muted-foreground"
+        >
+          {t("create_password_instead")}
+        </button>
+        {!hasCustomPassword && (
+          <p className="text-[11px] font-semibold text-muted-foreground">{t("demo_pin")}</p>
+        )}
       </section>
     </AppShell>
   );
 }
+
 
 function ParentHome() {
   const { viewerRole } = useSync();
@@ -96,6 +170,10 @@ function ParentDashboard() {
     acceptHelp,
     lockParent,
     homework,
+    addChorePack,
+    isPremium,
+    gardenEnabled,
+
   } = useSync();
   const { t } = useI18n();
 
@@ -121,10 +199,13 @@ function ParentDashboard() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [points, setPoints] = useState<10 | 20 | 30>(20);
+  const [recurrence, setRecurrence] = useState<Recurrence>("once");
+  const [addedPack, setAddedPack] = useState<string | null>(null);
   const [category, setCategory] = useState<Category>(
     family.locationType === "rural" ? "rural" : "indoor",
   );
   const [assignee, setAssignee] = useState(siblings[0]?.id ?? "");
+
 
   const load = siblings.map((s) => {
     const total = assignments
@@ -219,7 +300,7 @@ function ParentDashboard() {
         </p>
       </section>
 
-      <FamilyGarden compact />
+      {gardenEnabled && <FamilyGarden compact />}
 
       <section className="card-soft p-5">
         <h2 className="text-lg font-extrabold">{t("weekly_fairness")}</h2>
@@ -317,6 +398,43 @@ function ParentDashboard() {
       </section>
 
       <section className="card-soft p-5">
+        <h2 className="text-lg font-extrabold">{t("chore_packs")}</h2>
+        <p className="text-xs font-semibold text-muted-foreground">{t("chore_packs_note")}</p>
+        <ul className="mt-3 space-y-2">
+          {CHORE_PACKS.map((pack) => (
+            <li key={pack.id} className="rounded-2xl bg-surface-2 p-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{pack.emoji}</span>
+                <div className="flex-1">
+                  <p className="text-sm font-extrabold">
+                    {t(("pack_" + pack.id) as "pack_bedroom")}
+                  </p>
+                  <p className="text-[11px] font-bold text-muted-foreground">
+                    {t("chores_in_pack", { n: pack.chores.length })}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    addChorePack(pack.id);
+                    setAddedPack(pack.id);
+                  }}
+                  className="rounded-2xl bg-primary px-4 py-2.5 text-xs font-extrabold text-primary-foreground"
+                >
+                  {t("add_pack", { pack: t(("pack_" + pack.id) as "pack_bedroom") })}
+                </button>
+              </div>
+              {addedPack === pack.id && (
+                <p className="mt-2 text-[11px] font-bold text-success-foreground">
+                  {t("pack_added")}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="card-soft p-5">
+
         <button
           onClick={() => setOpen((o) => !o)}
           className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
@@ -361,6 +479,38 @@ function ParentDashboard() {
                 </button>
               ))}
             </div>
+            <div>
+              <p className="mb-2 px-1 text-xs font-extrabold text-muted-foreground">
+                {t("recurrence")}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {(["once", "daily", "weekly"] as const).map((r) => {
+                  const locked = r !== "once" && !isPremium;
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => !locked && setRecurrence(r)}
+                      className={`rounded-2xl py-2.5 text-xs font-extrabold ${
+                        recurrence === r
+                          ? "bg-secondary text-secondary-foreground"
+                          : "bg-surface-2 text-muted-foreground"
+                      } ${locked ? "opacity-50" : ""}`}
+                    >
+                      {locked ? "🔒 " : ""}
+                      {t(("rec_" + r) as "rec_once")}
+                    </button>
+                  );
+                })}
+              </div>
+              {!isPremium && (
+                <Link
+                  to="/plans"
+                  className="mt-2 block text-[11px] font-bold text-muted-foreground underline"
+                >
+                  {t("premium_locked_note", { feature: t("feature_recurring") })} {t("see_plans")}
+                </Link>
+              )}
+            </div>
             <select
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
@@ -382,10 +532,12 @@ function ParentDashboard() {
                     minAge: points === 10 ? 5 : points === 20 ? 9 : 13,
                     category,
                     emoji: points === 30 ? "💪" : points === 20 ? "🧹" : "🌟",
+                    recurrence,
                   },
                   assignee,
                 );
                 setTitle("");
+                setRecurrence("once");
                 setOpen(false);
               }}
               className="w-full rounded-2xl bg-secondary py-3 text-sm font-extrabold text-secondary-foreground"
@@ -396,13 +548,81 @@ function ParentDashboard() {
         )}
       </section>
 
+      <ChangePassword />
+
       <button
         onClick={lockParent}
         className="w-full rounded-2xl bg-surface-2 py-3 text-sm font-extrabold text-muted-foreground"
       >
         {t("switch_kid_view")}
       </button>
+
     </AppShell>
 
+  );
+}
+
+function ChangePassword() {
+  const { setParentPassword } = useSync();
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const inputClass =
+    "w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-ring";
+
+  return (
+    <section className="card-soft p-5">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full rounded-2xl bg-surface-2 py-3 text-sm font-extrabold text-muted-foreground"
+      >
+        {t("change_password")}
+      </button>
+      {open && (
+        <div className="mt-4 space-y-3">
+          <input
+            value={pw}
+            onChange={(e) => {
+              setPw(e.target.value);
+              setError(null);
+              setSaved(false);
+            }}
+            type="password"
+            placeholder={t("new_password")}
+            className={inputClass}
+          />
+          <input
+            value={pw2}
+            onChange={(e) => {
+              setPw2(e.target.value);
+              setError(null);
+              setSaved(false);
+            }}
+            type="password"
+            placeholder={t("confirm_password")}
+            className={inputClass}
+          />
+          {error && <p className="text-xs font-bold text-destructive">{error}</p>}
+          {saved && <p className="text-xs font-bold text-success-foreground">{t("password_saved")}</p>}
+          <button
+            onClick={() => {
+              if (pw.trim().length < 4) return setError(t("password_too_short"));
+              if (pw !== pw2) return setError(t("passwords_dont_match"));
+              setParentPassword(pw);
+              setPw("");
+              setPw2("");
+              setSaved(true);
+            }}
+            className="w-full rounded-2xl bg-primary py-3 text-sm font-extrabold text-primary-foreground"
+          >
+            {t("save_password")}
+          </button>
+        </div>
+      )}
+    </section>
   );
 }

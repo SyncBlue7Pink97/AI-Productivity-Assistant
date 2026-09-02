@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { FairnessBreakdown } from "@/components/FairnessBreakdown";
@@ -9,9 +9,12 @@ import {
   weightedPoints,
   suggestHelper,
   HELP_BONUS,
+  CHORE_PACKS,
   type Category,
+  type Recurrence,
 } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
+
 
 export const Route = createFileRoute("/parent")({
   head: () => ({

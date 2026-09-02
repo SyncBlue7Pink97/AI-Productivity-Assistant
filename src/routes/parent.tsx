@@ -172,6 +172,8 @@ function ParentDashboard() {
     homework,
     addChorePack,
     isPremium,
+    gardenEnabled,
+
   } = useSync();
   const { t } = useI18n();
 

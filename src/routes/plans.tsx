@@ -128,13 +128,22 @@ function PlansPage() {
             </button>
           </div>
         ) : (
-          <button
-            onClick={() => setPlan("premium")}
-            className="mt-4 w-full rounded-2xl bg-primary py-3.5 text-sm font-extrabold text-primary-foreground shadow-lift"
-          >
-            {t("upgrade_now", { price: PREMIUM_PRICE })}
-          </button>
+          <>
+            <button
+              onClick={onUpgrade}
+              disabled={busy}
+              className="mt-4 w-full rounded-2xl bg-primary py-3.5 text-sm font-extrabold text-primary-foreground shadow-lift disabled:opacity-60"
+            >
+              {busy ? "…" : t("upgrade_now", { price: PREMIUM_PRICE })}
+            </button>
+            {error && (
+              <p className="mt-2 rounded-2xl bg-card/70 px-4 py-2.5 text-xs font-bold text-destructive">
+                {error}
+              </p>
+            )}
+          </>
         )}
+
       </section>
     </AppShell>
   );

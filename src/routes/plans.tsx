@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useSync, PREMIUM_PRICE } from "@/lib/sync-store";
+import { createPremiumCheckout } from "@/lib/billing.functions";
 import { useI18n, type Dict } from "@/lib/i18n";
+
 
 export const Route = createFileRoute("/plans")({
   head: () => ({
@@ -37,6 +41,31 @@ const premiumFeatures: (keyof Dict)[] = [
 function PlansPage() {
   const { plan, setPlan, isPremium } = useSync();
   const { t } = useI18n();
+  const startCheckout = useServerFn(createPremiumCheckout);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "success") {
+      setPlan("premium");
+      window.history.replaceState({}, "", "/plans");
+    }
+  }, [setPlan]);
+
+  const onUpgrade = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const { url } = await startCheckout({});
+      window.location.href = url;
+    } catch {
+      setError("Could not start checkout. Please try again.");
+      setBusy(false);
+    }
+  };
+
+
 
   return (
     <AppShell title={t("plans_title")} subtitle={t("plans_sub")}>
@@ -99,13 +128,22 @@ function PlansPage() {
             </button>
           </div>
         ) : (
-          <button
-            onClick={() => setPlan("premium")}
-            className="mt-4 w-full rounded-2xl bg-primary py-3.5 text-sm font-extrabold text-primary-foreground shadow-lift"
-          >
-            {t("upgrade_now", { price: PREMIUM_PRICE })}
-          </button>
+          <>
+            <button
+              onClick={onUpgrade}
+              disabled={busy}
+              className="mt-4 w-full rounded-2xl bg-primary py-3.5 text-sm font-extrabold text-primary-foreground shadow-lift disabled:opacity-60"
+            >
+              {busy ? "…" : t("upgrade_now", { price: PREMIUM_PRICE })}
+            </button>
+            {error && (
+              <p className="mt-2 rounded-2xl bg-card/70 px-4 py-2.5 text-xs font-bold text-destructive">
+                {error}
+              </p>
+            )}
+          </>
         )}
+
       </section>
     </AppShell>
   );

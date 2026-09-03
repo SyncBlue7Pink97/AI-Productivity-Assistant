@@ -41,6 +41,31 @@ const premiumFeatures: (keyof Dict)[] = [
 function PlansPage() {
   const { plan, setPlan, isPremium } = useSync();
   const { t } = useI18n();
+  const startCheckout = useServerFn(createPremiumCheckout);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "success") {
+      setPlan("premium");
+      window.history.replaceState({}, "", "/plans");
+    }
+  }, [setPlan]);
+
+  const onUpgrade = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const { url } = await startCheckout({});
+      window.location.href = url;
+    } catch {
+      setError("Could not start checkout. Please try again.");
+      setBusy(false);
+    }
+  };
+
+
 
   return (
     <AppShell title={t("plans_title")} subtitle={t("plans_sub")}>

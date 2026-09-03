@@ -19,6 +19,9 @@ export const createPremiumCheckout = createServerFn({ method: "POST" }).handler(
       success_url: `${origin}/plans?checkout=success`,
       cancel_url: `${origin}/plans?checkout=cancelled`,
       allow_promotion_codes: "true",
+      // Account has Managed Payments on by default, which requires a product
+      // tax_code. Disable it for this session so checkout works as-is.
+      "managed_payments[enabled]": "false",
     });
 
     const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {

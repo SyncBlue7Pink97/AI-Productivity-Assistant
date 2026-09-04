@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { FairnessBreakdown } from "@/components/FairnessBreakdown";
+import { PremiumGate } from "@/components/PremiumGate";
 import { FamilyGarden } from "@/components/FamilyGarden";
 import {
   useSync,
@@ -332,7 +333,9 @@ function ParentDashboard() {
         </button>
       </section>
 
-      <FairnessBreakdown />
+      <PremiumGate feature={t("feature_reports")}>
+        <FairnessBreakdown />
+      </PremiumGate>
 
       <section className="space-y-3">
         <h2 className="px-1 text-lg font-extrabold">

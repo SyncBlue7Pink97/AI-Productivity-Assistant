@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { PremiumGate } from "@/components/PremiumGate";
 import { useSync } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
 
@@ -31,6 +32,7 @@ function Rewards() {
 
   return (
     <AppShell title={t("rewards")} subtitle={t("points_to_spend", { name: me.name, pts: me.points })}>
+      <PremiumGate feature={t("feature_rewards")}>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {siblings.map((s) => (
           <button
@@ -74,6 +76,7 @@ function Rewards() {
           </div>
         );
       })}
+      </PremiumGate>
     </AppShell>
   );
 }

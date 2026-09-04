@@ -16,6 +16,7 @@ export const createPremiumCheckout = createServerFn({ method: "POST" }).handler(
       mode: "subscription",
       "line_items[0][price]": PREMIUM_PRICE_ID,
       "line_items[0][quantity]": "1",
+      "payment_method_types[0]": "card",
       success_url: `${origin}/plans?checkout=success`,
       cancel_url: `${origin}/plans?checkout=cancelled`,
       allow_promotion_codes: "true",

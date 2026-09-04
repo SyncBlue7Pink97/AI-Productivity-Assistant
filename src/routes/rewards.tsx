@@ -76,6 +76,7 @@ function Rewards() {
           </div>
         );
       })}
+      </PremiumGate>
     </AppShell>
   );
 }

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 
 /** Stripe price for SiblingSync Premium Family — R79 / month. */
-export const PREMIUM_PRICE_ID = "price_1UBX4GRUYK5wcggHa9QLjOBR";
+export const PREMIUM_PRICE_ID = "price_1UBxIlDjvNBPZeuQQUaxObBz";
 
 export const createPremiumCheckout = createServerFn({ method: "POST" }).handler(
   async () => {

@@ -332,7 +332,9 @@ function ParentDashboard() {
         </button>
       </section>
 
-      <FairnessBreakdown />
+      <PremiumGate feature={t("feature_reports")}>
+        <FairnessBreakdown />
+      </PremiumGate>
 
       <section className="space-y-3">
         <h2 className="px-1 text-lg font-extrabold">

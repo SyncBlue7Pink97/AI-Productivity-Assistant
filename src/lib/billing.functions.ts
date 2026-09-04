@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 
 /** Stripe price for SiblingSync Premium Family — R79 / month. */
-export const PREMIUM_PRICE_ID = "price_1UBX4GRUYK5wcggHa9QLjOBR";
+export const PREMIUM_PRICE_ID = "price_1UBxIlDjvNBPZeuQQUaxObBz";
 
 export const createPremiumCheckout = createServerFn({ method: "POST" }).handler(
   async () => {
@@ -16,6 +16,7 @@ export const createPremiumCheckout = createServerFn({ method: "POST" }).handler(
       mode: "subscription",
       "line_items[0][price]": PREMIUM_PRICE_ID,
       "line_items[0][quantity]": "1",
+      "payment_method_types[0]": "card",
       success_url: `${origin}/plans?checkout=success`,
       cancel_url: `${origin}/plans?checkout=cancelled`,
       allow_promotion_codes: "true",

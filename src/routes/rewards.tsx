@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { PremiumGate } from "@/components/PremiumGate";
 import { useSync } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
 

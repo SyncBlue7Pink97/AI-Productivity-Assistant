@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, AgeBadge } from "@/components/AppShell";
+import { PremiumGate } from "@/components/PremiumGate";
 import { useSync, ageBadge } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
 
@@ -37,6 +38,7 @@ function Leaderboard() {
 
   return (
     <AppShell title={t("leaderboard")} subtitle={t("leaderboard_sub")}>
+      <PremiumGate feature={t("feature_ranks")}>
       {ranked.map((s, i) => {
         const badge = ageBadge(s.age);
         return (
@@ -71,6 +73,7 @@ function Leaderboard() {
       <p className="card-soft p-4 text-xs font-semibold text-muted-foreground">
         {t("leaderboard_note")}
       </p>
+      </PremiumGate>
     </AppShell>
   );
 }

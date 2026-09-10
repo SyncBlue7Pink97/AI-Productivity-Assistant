@@ -10,6 +10,7 @@ import {
 } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
 import { ShoutDone } from "@/components/ShoutDone";
+import { PremiumGate } from "@/components/PremiumGate";
 
 export const Route = createFileRoute("/sibling")({
   head: () => ({
@@ -166,11 +167,15 @@ function SiblingHome() {
 
 
               {a.status === "todo" && (
-                <div className="mt-3 rounded-2xl bg-surface-2 p-3">
-                  <p className="text-xs font-extrabold">{t("shout_done")}</p>
-                  <ShoutDone
-                    onDone={(voiceUrl) => submitProof(a.id, undefined, voiceUrl)}
-                  />
+                <div className="mt-3">
+                  <PremiumGate feature={t("feature_voice")}>
+                    <div className="rounded-2xl bg-surface-2 p-3">
+                      <p className="text-xs font-extrabold">{t("shout_done")}</p>
+                      <ShoutDone
+                        onDone={(voiceUrl) => submitProof(a.id, undefined, voiceUrl)}
+                      />
+                    </div>
+                  </PremiumGate>
                 </div>
               )}
 

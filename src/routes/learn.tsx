@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { PremiumGate } from "@/components/PremiumGate";
 import { useSync, HOMEWORK_POINTS } from "@/lib/sync-store";
 import { useI18n } from "@/lib/i18n";
 
@@ -51,6 +52,7 @@ function LearnSync() {
 
   return (
     <AppShell title={t("learn_sync")} subtitle={t("learn_sub")}>
+      <PremiumGate feature={t("feature_learn")}>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {siblings.map((s) => (
           <button
@@ -218,6 +220,7 @@ function LearnSync() {
           </div>
         )}
       </section>
+      </PremiumGate>
     </AppShell>
   );
 }

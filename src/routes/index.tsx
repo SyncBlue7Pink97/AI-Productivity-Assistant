@@ -32,6 +32,7 @@ function Onboarding() {
   const [mode, setMode] = useState<"create" | "join">("create");
   const [familyName, setFamilyName] = useState("Mokoena Family");
   const [joinCode, setJoinCode] = useState("");
+  const [familyCode, setFamilyCode] = useState("LIM-482");
   const [locationType, setLocationType] = useState<LocationType>("rural");
   const [kids, setKids] = useState<Kid[]>([
     { name: "Amahle", age: 16 },
@@ -42,11 +43,18 @@ function Onboarding() {
   const update = (i: number, patch: Partial<Kid>) =>
     setKids((prev) => prev.map((k, idx) => (idx === i ? { ...k, ...patch } : k)));
 
+  const randomCode = () => {
+    const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const pick = Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)]).join("");
+    return `${pick}-${Math.floor(100 + Math.random() * 900)}`;
+  };
+
   const start = () => {
+    const created = familyCode.trim().toUpperCase() || randomCode();
     completeFamilySetup(
       {
         name: mode === "create" ? familyName : "Joined Family",
-        code: mode === "join" && joinCode ? joinCode.toUpperCase() : "LIM-482",
+        code: mode === "join" ? (joinCode.toUpperCase() || "LIM-482") : created,
         locationType,
       },
       kids.filter((k) => k.name.trim()),
@@ -106,6 +114,27 @@ function Onboarding() {
                 className="mt-1 w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-base font-semibold outline-none focus:ring-2 focus:ring-ring"
               />
             </label>
+          ) : null}
+          {mode === "create" ? (
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground">{t("family_code")}</span>
+                <button
+                  type="button"
+                  onClick={() => setFamilyCode(randomCode())}
+                  className="rounded-full bg-primary-container px-3 py-1 text-xs font-bold text-on-primary-container"
+                >
+                  🎲
+                </button>
+              </div>
+              <input
+                value={familyCode}
+                onChange={(e) => setFamilyCode(e.target.value.toUpperCase())}
+                maxLength={12}
+                placeholder="LIM-482"
+                className="mt-1 w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-xl font-extrabold tracking-[0.3em] uppercase outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
           ) : (
             <label className="block">
               <span className="text-xs font-bold text-muted-foreground">{t("family_code")}</span>

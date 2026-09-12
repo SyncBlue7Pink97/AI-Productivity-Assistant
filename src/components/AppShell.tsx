@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Home, BarChart3, Trophy, Gift, Sprout, BookOpen, Sparkles } from "lucide-react";
+import { Home, BarChart3, Trophy, Gift, BookOpen, Sparkles } from "lucide-react";
 import { useSync } from "@/lib/sync-store";
 import { useI18n, LANGUAGES, type Dict } from "@/lib/i18n";
 
@@ -8,7 +8,7 @@ const tabs = [
   { to: "/sibling", key: "nav_my_sync", Icon: Home },
   { to: "/parent", key: "nav_parent", Icon: BarChart3 },
   { to: "/learn", key: "nav_learn", Icon: BookOpen },
-  { to: "/garden", key: "nav_garden", Icon: Sprout },
+  
   { to: "/leaderboard", key: "nav_ranks", Icon: Trophy },
   { to: "/rewards", key: "nav_rewards", Icon: Gift },
   { to: "/plans", key: "nav_plans", Icon: Sparkles },
@@ -61,11 +61,11 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { family, offlineMode, viewerRole, gardenEnabled } = useSync();
+  const { family, offlineMode, viewerRole } = useSync();
   const { t } = useI18n();
-  const visibleTabs = tabs
-    .filter((tab) => tab.to !== "/parent" || viewerRole === "parent")
-    .filter((tab) => tab.to !== "/garden" || gardenEnabled);
+  const visibleTabs = tabs.filter(
+    (tab) => tab.to !== "/parent" || viewerRole === "parent",
+  );
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background">

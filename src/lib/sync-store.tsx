@@ -246,7 +246,7 @@ type Store = {
   setPlan: (p: Plan) => void;
   isPremium: boolean;
   addChorePack: (packId: string) => void;
-  gardenEnabled: boolean;
+  
   unlockParent: (pin: string) => boolean;
   lockParent: () => void;
   setOfflineMode: (v: boolean) => void;
@@ -266,37 +266,12 @@ type Store = {
   redeem: (rewardId: string, userId: string) => void;
   setCheckIn: (assignmentId: string, checkIn: CheckIn) => void;
   acceptHelp: (assignmentId: string, helperId: string) => void;
-  gardenItems: GardenItem[];
-  grown: number;
   homework: Homework[];
   addHomework: (h: Omit<Homework, "id" | "status">) => void;
   setHomeworkStatus: (id: string, status: HomeworkStatus) => void;
   requestStudyHelp: (id: string) => void;
 };
 
-export type GardenItem = { emoji: string; label: string };
-
-export const RURAL_GARDEN: GardenItem[] = [
-  { emoji: "🌱", label: "Seedling" },
-  { emoji: "🐔", label: "Chicken" },
-  { emoji: "🌽", label: "Maize patch" },
-  { emoji: "🐐", label: "Goat" },
-  { emoji: "🌳", label: "Marula tree" },
-  { emoji: "🚜", label: "Small field" },
-  { emoji: "🌻", label: "Sunflowers" },
-  { emoji: "🏡", label: "Family homestead" },
-];
-
-export const URBAN_GARDEN: GardenItem[] = [
-  { emoji: "🪴", label: "Balcony plant" },
-  { emoji: "🐱", label: "Family cat" },
-  { emoji: "🛋️", label: "Tidy lounge" },
-  { emoji: "🐶", label: "Puppy" },
-  { emoji: "🌷", label: "Window box" },
-  { emoji: "🛏️", label: "Neat bedrooms" },
-  { emoji: "🌳", label: "Street tree" },
-  { emoji: "🏙️", label: "Rooftop garden" },
-];
 
 /** Fair helper suggestion: age-safe, done with own work, lightest load. */
 export function suggestHelper(
@@ -368,7 +343,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       plan,
       setPlan,
       isPremium: plan === "premium",
-      gardenEnabled: family.locationType === "rural",
+      
       setParentPassword: (pw: string) => {
         const clean = pw.trim();
         if (clean.length < 4) return;
@@ -524,8 +499,6 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         setHomework((prev) =>
           prev.map((h) => (h.id === id ? { ...h, helpWanted: true } : h)),
         ),
-      gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
-      grown: assignments.filter((a) => a.status === "approved").length,
       redeem: (rewardId, userId) => {
         const reward = rewards.find((r) => r.id === rewardId);
         const user = users.find((u) => u.id === userId);

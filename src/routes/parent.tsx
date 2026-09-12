@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { FairnessBreakdown } from "@/components/FairnessBreakdown";
 import { PremiumGate } from "@/components/PremiumGate";
-import { FamilyGarden } from "@/components/FamilyGarden";
+
 import {
   useSync,
   difficultyOf,
@@ -173,7 +173,7 @@ function ParentDashboard() {
     homework,
     addChorePack,
     isPremium,
-    gardenEnabled,
+
 
   } = useSync();
   const { t } = useI18n();
@@ -301,7 +301,6 @@ function ParentDashboard() {
         </p>
       </section>
 
-      {gardenEnabled && <FamilyGarden compact />}
 
       <section className="card-soft p-5">
         <h2 className="text-lg font-extrabold">{t("weekly_fairness")}</h2>

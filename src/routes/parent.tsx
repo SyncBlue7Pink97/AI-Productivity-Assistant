@@ -301,7 +301,6 @@ function ParentDashboard() {
         </p>
       </section>
 
-      {gardenEnabled && <FamilyGarden compact />}
 
       <section className="card-soft p-5">
         <h2 className="text-lg font-extrabold">{t("weekly_fairness")}</h2>

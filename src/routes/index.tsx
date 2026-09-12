@@ -114,6 +114,27 @@ function Onboarding() {
                 className="mt-1 w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-base font-semibold outline-none focus:ring-2 focus:ring-ring"
               />
             </label>
+          ) : null}
+          {mode === "create" ? (
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground">{t("family_code")}</span>
+                <button
+                  type="button"
+                  onClick={() => setFamilyCode(randomCode())}
+                  className="rounded-full bg-primary-container px-3 py-1 text-xs font-bold text-on-primary-container"
+                >
+                  🎲
+                </button>
+              </div>
+              <input
+                value={familyCode}
+                onChange={(e) => setFamilyCode(e.target.value.toUpperCase())}
+                maxLength={12}
+                placeholder="LIM-482"
+                className="mt-1 w-full rounded-2xl border border-input bg-surface-2 px-4 py-3 text-center text-xl font-extrabold tracking-[0.3em] uppercase outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
           ) : (
             <label className="block">
               <span className="text-xs font-bold text-muted-foreground">{t("family_code")}</span>

@@ -61,11 +61,11 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { family, offlineMode, viewerRole, gardenEnabled } = useSync();
+  const { family, offlineMode, viewerRole } = useSync();
   const { t } = useI18n();
-  const visibleTabs = tabs
-    .filter((tab) => tab.to !== "/parent" || viewerRole === "parent")
-    .filter((tab) => tab.to !== "/garden" || gardenEnabled);
+  const visibleTabs = tabs.filter(
+    (tab) => tab.to !== "/parent" || viewerRole === "parent",
+  );
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background">

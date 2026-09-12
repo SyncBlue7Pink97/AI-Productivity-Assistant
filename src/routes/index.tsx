@@ -172,11 +172,6 @@ function Onboarding() {
               </button>
             ))}
           </div>
-          {locationType === "rural" && (
-            <p className="rounded-2xl bg-secondary-container px-4 py-3 text-xs font-semibold text-on-secondary-container">
-              {t("rural_pack_note")}
-            </p>
-          )}
         </section>
 
         <section className="card-soft space-y-3 p-5">

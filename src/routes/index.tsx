@@ -42,11 +42,18 @@ function Onboarding() {
   const update = (i: number, patch: Partial<Kid>) =>
     setKids((prev) => prev.map((k, idx) => (idx === i ? { ...k, ...patch } : k)));
 
+  const randomCode = () => {
+    const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const pick = Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)]).join("");
+    return `${pick}-${Math.floor(100 + Math.random() * 900)}`;
+  };
+
   const start = () => {
+    const created = familyCode.trim().toUpperCase() || randomCode();
     completeFamilySetup(
       {
         name: mode === "create" ? familyName : "Joined Family",
-        code: mode === "join" && joinCode ? joinCode.toUpperCase() : "LIM-482",
+        code: mode === "join" ? (joinCode.toUpperCase() || "LIM-482") : created,
         locationType,
       },
       kids.filter((k) => k.name.trim()),

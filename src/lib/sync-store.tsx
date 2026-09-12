@@ -499,8 +499,6 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         setHomework((prev) =>
           prev.map((h) => (h.id === id ? { ...h, helpWanted: true } : h)),
         ),
-      gardenItems: family.locationType === "rural" ? RURAL_GARDEN : URBAN_GARDEN,
-      grown: assignments.filter((a) => a.status === "approved").length,
       redeem: (rewardId, userId) => {
         const reward = rewards.find((r) => r.id === rewardId);
         const user = users.find((u) => u.id === userId);

@@ -343,7 +343,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       plan,
       setPlan,
       isPremium: plan === "premium",
-      gardenEnabled: family.locationType === "rural",
+      
       setParentPassword: (pw: string) => {
         const clean = pw.trim();
         if (clean.length < 4) return;

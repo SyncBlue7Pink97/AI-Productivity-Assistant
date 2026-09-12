@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppShell, AgeBadge } from "@/components/AppShell";
 import { FairnessBreakdown } from "@/components/FairnessBreakdown";
 import { PremiumGate } from "@/components/PremiumGate";
-import { FamilyGarden } from "@/components/FamilyGarden";
+
 import {
   useSync,
   difficultyOf,

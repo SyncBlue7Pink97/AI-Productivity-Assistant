@@ -32,6 +32,7 @@ function Onboarding() {
   const [mode, setMode] = useState<"create" | "join">("create");
   const [familyName, setFamilyName] = useState("Mokoena Family");
   const [joinCode, setJoinCode] = useState("");
+  const [familyCode, setFamilyCode] = useState("LIM-482");
   const [locationType, setLocationType] = useState<LocationType>("rural");
   const [kids, setKids] = useState<Kid[]>([
     { name: "Amahle", age: 16 },

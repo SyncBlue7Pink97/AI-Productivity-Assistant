@@ -246,7 +246,7 @@ type Store = {
   setPlan: (p: Plan) => void;
   isPremium: boolean;
   addChorePack: (packId: string) => void;
-  gardenEnabled: boolean;
+  
   unlockParent: (pin: string) => boolean;
   lockParent: () => void;
   setOfflineMode: (v: boolean) => void;

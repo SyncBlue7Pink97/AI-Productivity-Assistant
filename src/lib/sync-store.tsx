@@ -272,29 +272,6 @@ type Store = {
   requestStudyHelp: (id: string) => void;
 };
 
-export type GardenItem = { emoji: string; label: string };
-
-export const RURAL_GARDEN: GardenItem[] = [
-  { emoji: "🌱", label: "Seedling" },
-  { emoji: "🐔", label: "Chicken" },
-  { emoji: "🌽", label: "Maize patch" },
-  { emoji: "🐐", label: "Goat" },
-  { emoji: "🌳", label: "Marula tree" },
-  { emoji: "🚜", label: "Small field" },
-  { emoji: "🌻", label: "Sunflowers" },
-  { emoji: "🏡", label: "Family homestead" },
-];
-
-export const URBAN_GARDEN: GardenItem[] = [
-  { emoji: "🪴", label: "Balcony plant" },
-  { emoji: "🐱", label: "Family cat" },
-  { emoji: "🛋️", label: "Tidy lounge" },
-  { emoji: "🐶", label: "Puppy" },
-  { emoji: "🌷", label: "Window box" },
-  { emoji: "🛏️", label: "Neat bedrooms" },
-  { emoji: "🌳", label: "Street tree" },
-  { emoji: "🏙️", label: "Rooftop garden" },
-];
 
 /** Fair helper suggestion: age-safe, done with own work, lightest load. */
 export function suggestHelper(

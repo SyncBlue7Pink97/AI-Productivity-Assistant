@@ -266,8 +266,6 @@ type Store = {
   redeem: (rewardId: string, userId: string) => void;
   setCheckIn: (assignmentId: string, checkIn: CheckIn) => void;
   acceptHelp: (assignmentId: string, helperId: string) => void;
-  
-  grown: number;
   homework: Homework[];
   addHomework: (h: Omit<Homework, "id" | "status">) => void;
   setHomeworkStatus: (id: string, status: HomeworkStatus) => void;

@@ -208,6 +208,13 @@ function Onboarding() {
         >
           {t("start_syncing")}
         </button>
+
+        <Link
+          to="/about"
+          className="block w-full rounded-2xl bg-surface-2 py-3 text-center text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {t("view_creator")}
+        </Link>
       </div>
     </div>
   );

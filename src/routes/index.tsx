@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSync, type LocationType } from "@/lib/sync-store";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
@@ -208,6 +208,13 @@ function Onboarding() {
         >
           {t("start_syncing")}
         </button>
+
+        <Link
+          to="/about"
+          className="block w-full rounded-2xl bg-surface-2 py-3 text-center text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {t("view_creator")}
+        </Link>
       </div>
     </div>
   );

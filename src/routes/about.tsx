@@ -50,6 +50,32 @@ function AboutCreator() {
         </section>
 
         <section className="card-soft space-y-3 p-5">
+          <h2 className="text-base font-extrabold">{t("personal_details")}</h2>
+          <ul className="space-y-2 text-sm font-medium text-muted-foreground">
+            <li className="flex items-center gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary-container/70 text-base">📍</span>
+              <span className="font-semibold text-foreground">{t("location_label")}:</span>
+              Cape Town
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary-container/70 text-base">🎂</span>
+              <span className="font-semibold text-foreground">{t("age_label")}:</span>
+              18 {t("age_label").toLowerCase()}
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary-container/70 text-base">✉️</span>
+              <span className="font-semibold text-foreground">{t("email_label")}:</span>
+              <a
+                href="mailto:prosperitymojapelo7@gmail.com"
+                className="break-all text-primary underline decoration-primary/40 underline-offset-2"
+              >
+                prosperitymojapelo7@gmail.com
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <section className="card-soft space-y-3 p-5">
           <h2 className="text-base font-extrabold">{t("app_name")}</h2>
           <p className="text-sm font-medium leading-relaxed text-muted-foreground">
             {t("about_app")}

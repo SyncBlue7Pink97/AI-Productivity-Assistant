@@ -259,6 +259,17 @@ const en = {
   guardians: "Parents & guardians",
   add_guardian: "➕ Add guardian",
   guardian_name: "Guardian name",
+
+  // about creator
+  about_creator: "About the creator",
+  creator_name: "Prosperity Mojapelo",
+  creator_role: "Creator & Developer of SiblingSync",
+  creator_bio:
+    "SiblingSync was created by Prosperity Mojapelo to help families share chores fairly — no matter where they live. From rural villages to city flats, the app turns daily tasks into teamwork, points and pride.",
+  creator_mission: "Built so siblings stop arguing and start helping each other.",
+  about_app: "SiblingSync ends chore arguments with fair, age-based rotation, photo and voice proof, points, streaks and rewards — designed for both urban and rural families.",
+  back_home: "Back home",
+  view_creator: "ℹ️ About the creator",
 };
 
 export type Dict = typeof en;
@@ -406,7 +417,16 @@ const zu: Partials = {
   learn_summary: "Isifinyezo somsebenzi wesikole",
   needs_help_study: "🙋 Cela usizo lokufunda",
   study_help_note: "{name} ucele usizo ku-{subject}.",
-  chores_after_homework: "Umsebenzi wesikole kuqala, bese kulandela imisebenzi yasekhaya.",
+  chores_after_homework: "Umsebenzi wesikule kuqala, bese kulandela imisebenzi yasekhaya.",
+  about_creator: "Mayelana nomqambi",
+  creator_name: "Prosperity Mojapelo",
+  creator_role: "Umqambi & Umntuthi we-SiblingSync",
+  creator_bio:
+    "I-SiblingSync idalwe ngu-Prosperity Mojapelo ukuze usize imindeni ukuba yabelane ngemisebenzi yasekhaya ngokulingana — noma bekuphi lapho bahlala khona. Esigodini nasemaphandleni, uhlelo lubuyeza imisebenzi yansuku zonke ibe umsebenzi wesiqhaza, amaphuzu namandla.",
+  creator_mission: "Idalwe ukuze abantwana bayeke ukuphisana baze basizane.",
+  about_app: "I-SiblingSync iphelisa izinkinga zemisebenzi ngenhlakanipho yokulinganisa ngeminyaka, ubufakazi besithombe nesiZwi, amaphuzu, isiqendu nezinkomishi.",
+  back_home: "Buyela ekhaya",
+  view_creator: "ℹ️ Mayelana nomqambi",
 };
 
 const af: Partials = {
@@ -552,6 +572,15 @@ const af: Partials = {
   needs_help_study: "🙋 Vra studiehulp",
   study_help_note: "{name} het hulp gevra met {subject}.",
   chores_after_homework: "Huiswerk eerste, takies daarna — hou skool op koers.",
+  about_creator: "Oor die maker",
+  creator_name: "Prosperity Mojapelo",
+  creator_role: "Maker & Ontwikkelaar van SiblingSync",
+  creator_bio:
+    "SiblingSync is deur Prosperity Mojapelo geskep om gesinne te help om take regverdig te deel — waar hulle ook al woon. Van plattelandse dorpe tot woonstelgeboue verander die app daaglikse take in spanwerk, punte en trots.",
+  creator_mission: "Gemaak sodat broers en susters ophou stry en mekaar help.",
+  about_app: "SiblingSync beëindig taakstryery met regverdige ouderdomgebaseerde rotasie, foto- en stembewys, punte, reekse en belonings.",
+  back_home: "Terug huis toe",
+  view_creator: "ℹ️ Oor die maker",
 };
 
 const st: Partials = {
@@ -697,6 +726,15 @@ const st: Partials = {
   needs_help_study: "🙋 Kopa thuso ya ho ithuta",
   study_help_note: "{name} o kopile thuso ka {subject}.",
   chores_after_homework: "Mosebetsi wa sekolo pele, mesebetsi ya lapeng hamorao.",
+  about_creator: "Ka motsamaisi",
+  creator_name: "Prosperity Mojapelo",
+  creator_role: "Motsamaisi & Morulahisi wa SiblingSync",
+  creator_bio:
+    "SiblingSync e hlophisitswe ke Prosperity Mojapelo ho thusa malapa ho arolana ka mesebetsi ya lapeng ka ho lekana — ho sa tsotellehe hore ba lula kae. Metse le ditoropong, sethala se fetola mesebetsi ya letsatsi le letsatsi eba sehlopha, dintlha le kutlo",
+  creator_mission: "E hlamilwe hore bana ba kgele mekgahanong, ba qale ho thusana.",
+  about_app: "SiblingSync e felisa liphoso tsa mesebetsi ka ho arola ho lekana ho base oneng, bosupi ba setshwantsho le lentswe, dintlha, mekgele le dikompo.",
+  back_home: "Boela hae",
+  view_creator: "ℹ️ Ka motsamaisi",
 };
 
 const DICTS: Record<Lang, Partials> = { en, zu, af, st };

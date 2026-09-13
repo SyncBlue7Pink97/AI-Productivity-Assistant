@@ -270,6 +270,11 @@ const en = {
   about_app: "SiblingSync ends chore arguments with fair, age-based rotation, photo and voice proof, points, streaks and rewards — designed for both urban and rural families.",
   back_home: "Back home",
   view_creator: "ℹ️ About the creator",
+  personal_details: "Personal details",
+  email_label: "Email",
+  location_label: "Location",
+  age_label: "Age",
+  contact_creator: "Contact",
 };
 
 export type Dict = typeof en;
@@ -427,6 +432,11 @@ const zu: Partials = {
   about_app: "I-SiblingSync iphelisa izinkinga zemisebenzi ngenhlakanipho yokulinganisa ngeminyaka, ubufakazi besithombe nesiZwi, amaphuzu, isiqendu nezinkomishi.",
   back_home: "Buyela ekhaya",
   view_creator: "ℹ️ Mayelana nomqambi",
+  personal_details: "Imininingwane yomuntu",
+  email_label: "I-imeyili",
+  location_label: "Indawo",
+  age_label: "Iminyaka",
+  contact_creator: "Xhumana",
 };
 
 const af: Partials = {
@@ -581,6 +591,11 @@ const af: Partials = {
   about_app: "SiblingSync beëindig taakstryery met regverdige ouderdomgebaseerde rotasie, foto- en stembewys, punte, reekse en belonings.",
   back_home: "Terug huis toe",
   view_creator: "ℹ️ Oor die maker",
+  personal_details: "Persoonlike besonderhede",
+  email_label: "E-pos",
+  location_label: "Ligging",
+  age_label: "Ouderdom",
+  contact_creator: "Kontak",
 };
 
 const st: Partials = {
@@ -735,6 +750,11 @@ const st: Partials = {
   about_app: "SiblingSync e felisa liphoso tsa mesebetsi ka ho arola ho lekana ho base oneng, bosupi ba setshwantsho le lentswe, dintlha, mekgele le dikompo.",
   back_home: "Boela hae",
   view_creator: "ℹ️ Ka motsamaisi",
+  personal_details: "Boitsebiso ba botho",
+  email_label: "Imeile",
+  location_label: "Boemo",
+  age_label: "Lilemo",
+  contact_creator: "Ikomanye",
 };
 
 const DICTS: Record<Lang, Partials> = { en, zu, af, st };
